@@ -10,11 +10,10 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
         .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .slider-wrap { position: relative; width: 100%; height: 75vh; overflow: hidden; background: #0f172a; }
+        .slider-wrap { position: relative; width: 100%; height: 70vh; overflow: hidden; background: #0f172a; }
         .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s ease-in-out; }
         .slide.active { opacity: 1; }
-        .slider-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: linear-gradient(to top, #f8fafc, transparent); z-index: 10; }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .slider-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to top, #f8fafc, transparent); z-index: 10; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col">
@@ -34,8 +33,8 @@
             <div class="flex items-center gap-4">
                 <button id="loginBtn" onclick="toggle('loginModal')" class="text-[10px] font-black text-slate-400 border px-4 py-2 rounded-full uppercase">Admin</button>
                 <div id="adminPanel" class="hidden flex items-center gap-3">
-                    <button onclick="toggle('imageModal')" class="bg-indigo-600 text-white text-[10px] px-5 py-2.5 rounded-full font-black uppercase">Slides</button>
-                    <button onclick="logout()" class="text-red-500 bg-white border p-2 rounded-full"><i class="fas fa-power-off"></i></button>
+                    <button onclick="toggle('imageModal')" class="bg-indigo-600 text-white text-[10px] px-5 py-2.5 rounded-full font-black uppercase">Manage Slides</button>
+                    <button onclick="logout()" class="text-red-500 bg-white border p-2 rounded-full shadow-sm"><i class="fas fa-power-off"></i></button>
                 </div>
             </div>
         </div>
@@ -44,26 +43,26 @@
     <!-- FULL WIDTH HERO SLIDER -->
     <div class="slider-wrap">
         <div id="slider">
-            <div class="absolute inset-0 flex items-center justify-center text-slate-500 bg-slate-100">
-                <i class="fas fa-spinner fa-spin mr-3"></i> Loading Gallery...
+            <div class="absolute inset-0 flex items-center justify-center text-slate-400 bg-slate-100 font-bold uppercase tracking-widest text-xs">
+                <i class="fas fa-spinner fa-spin mr-3"></i> Loading Classroom Gallery...
             </div>
         </div>
         <div class="slider-overlay"></div>
     </div>
 
-    <!-- MAIN HUB -->
+    <!-- MAIN CONTENT HUB -->
     <main class="max-w-7xl mx-auto px-6 py-16 flex-grow w-full">
         <div class="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
-            <div>
+            <div class="text-center md:text-left">
                 <h2 id="hubTitle" class="text-4xl font-extrabold text-slate-900 tracking-tight">Resource Hub</h2>
-                <p class="text-slate-400 font-medium mt-1">Classroom materials by Bhatta Sir</p>
+                <p class="text-slate-400 font-medium mt-1">Academic materials by Bhatta Sir</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                 <div class="flex items-center bg-white px-5 py-3 rounded-2xl border border-slate-100 shadow-sm w-full md:w-80">
                     <i class="fas fa-search text-slate-300 mr-3"></i>
-                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search topics..." class="bg-transparent outline-none text-sm w-full font-medium">
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search library..." class="bg-transparent outline-none text-sm w-full font-medium">
                 </div>
-                <button id="addResBtn" onclick="toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-indigo-100">
+                <button id="addResBtn" onclick="toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-indigo-100 whitespace-nowrap">
                     <i class="fas fa-plus-circle mr-2"></i> Add Content
                 </button>
             </div>
@@ -89,20 +88,21 @@
             <h2 class="text-3xl font-black text-slate-900 mb-8">Admin</h2>
             <input type="email" id="email" placeholder="Email" class="w-full p-4 bg-slate-50 border rounded-2xl mb-4 outline-none">
             <input type="password" id="password" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-2xl mb-8 outline-none">
-            <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">Login</button>
+            <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">Access Dashboard</button>
         </div>
     </div>
 
-    <!-- MODAL: SLIDE MANAGER (Saves as Base64 to Firestore) -->
+    <!-- MODAL: SLIDE MANAGER (Stores as compressed text in Firestore) -->
     <div id="imageModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-lg relative max-h-[85vh] flex flex-col">
             <button onclick="toggle('imageModal')" class="absolute top-6 right-6 text-slate-300 text-2xl"><i class="fas fa-times-circle"></i></button>
             <h2 class="text-2xl font-bold mb-6">Slider Manager</h2>
             <div class="mb-8 p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center">
                 <input type="file" id="fileInp" accept="image/*" class="text-xs w-full mb-4">
-                <button onclick="savePhoto()" id="upBtn" class="w-full bg-indigo-600 text-white py-3 rounded-2xl font-bold shadow-lg">Upload to Gallery</button>
+                <button onclick="savePhoto()" id="upBtn" class="w-full bg-indigo-600 text-white py-3 rounded-2xl font-bold shadow-lg">Save to Gallery</button>
+                <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase">Auto-optimized for free hosting</p>
             </div>
-            <div id="photoList" class="flex-grow overflow-y-auto space-y-4"></div>
+            <div id="photoList" class="flex-grow overflow-y-auto space-y-4 pr-2"></div>
         </div>
     </div>
 
@@ -110,16 +110,16 @@
     <div id="resourceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4">
         <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md relative">
             <button onclick="toggle('resourceModal')" class="absolute top-6 right-6 text-slate-300 text-2xl"><i class="fas fa-times-circle"></i></button>
-            <h2 class="text-2xl font-bold mb-6">Add Material</h2>
+            <h2 class="text-2xl font-bold mb-6">New Content</h2>
             <div class="space-y-4">
                 <input type="text" id="resTitle" placeholder="Title" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none">
                 <div class="flex gap-4">
                     <select id="resType" class="border rounded-2xl p-4 bg-slate-50 font-bold text-slate-500 outline-none"><option value="video">Video</option><option value="note">Note</option></select>
-                    <input type="text" id="resLevel" placeholder="Level/Class" class="flex-1 p-4 border rounded-2xl bg-slate-50 outline-none">
+                    <input type="text" id="resLevel" placeholder="Class/Level" class="flex-1 p-4 border rounded-2xl bg-slate-50 outline-none">
                 </div>
-                <input type="text" id="resUrl" placeholder="URL Link" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none">
-                <textarea id="resDesc" placeholder="Description..." class="w-full p-4 border rounded-2xl bg-slate-50 outline-none h-24"></textarea>
-                <button onclick="addMaterial()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl">Publish</button>
+                <input type="text" id="resUrl" placeholder="Link" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none">
+                <textarea id="resDesc" placeholder="Brief info..." class="w-full p-4 border rounded-2xl bg-slate-50 outline-none h-24"></textarea>
+                <button onclick="addMaterial()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl">Publish to Hub</button>
             </div>
         </div>
     </div>
@@ -133,15 +133,13 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // CONFIG (NO STORAGE BUCKET NEEDED TO PREVENT CORS)
         const firebaseConfig = {
             apiKey: "AIzaSyAAqpdfNz-fb4v3g1AawHGSCpOcxP5QHfk",
             authDomain: "your-learning-site.firebaseapp.com",
-            projectId: "your-learning-site",
-            storageBucket: "your-learning-site.firebasestorage.app",
-            messagingSenderId: "150311153752",
-            appId: "1:150311153752:web:50d999325bc866865bda2d"
+            projectId: "your-learning-site"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -150,51 +148,85 @@
 
         document.getElementById('year').innerText = new Date().getFullYear();
 
-        // --- FREE UPLOAD LOGIC (Base64) ---
+        // --- IMPROVED IMAGE COMPRESSION + UPLOAD ---
         window.savePhoto = () => {
             const file = document.getElementById('fileInp').files[0];
-            if(!file) return alert("Select a file first");
+            if(!file) return alert("Please select a photo first");
             const btn = document.getElementById('upBtn');
-            btn.innerText = "Converting..."; btn.disabled = true;
+            btn.innerText = "OPTIMIZING..."; btn.disabled = true;
 
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = async () => {
-                try {
-                    await addDoc(collection(db, "slideshow"), { url: reader.result, createdAt: Date.now() });
-                    alert("Photo saved successfully!");
-                } catch (e) { alert("Error: " + e.message); }
-                btn.innerText = "Upload to Gallery"; btn.disabled = false;
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = async () => {
+                    // Create Canvas to resize and compress
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_WIDTH = 1200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert to high-quality compressed JPEG (0.7 quality)
+                    const base64 = canvas.toDataURL('image/jpeg', 0.7);
+
+                    try {
+                        await addDoc(collection(db, "slideshow"), { 
+                            url: base64, 
+                            createdAt: Date.now() 
+                        });
+                        alert("Classroom photo added!");
+                    } catch (err) { alert("Error: " + err.message); }
+                    btn.innerText = "Save to Gallery"; btn.disabled = false;
+                    document.getElementById('fileInp').value = "";
+                };
             };
         };
 
-        // --- SLIDER ---
+        // --- SLIDER ENGINE ---
         let slides = []; let curIdx = 0; let timer;
-        onSnapshot(collection(db, "slideshow"), (snap) => {
+        onSnapshot(query(collection(db, "slideshow"), orderBy("createdAt", "desc")), (snap) => {
             slides = snap.docs.map(d => ({id: d.id, ...d.data()}));
             const slider = document.getElementById('slider');
             const list = document.getElementById('photoList');
             if(slides.length > 0) {
                 slider.innerHTML = slides.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
-                list.innerHTML = slides.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border">
-                    <img src="${s.url}" class="w-16 h-10 object-cover rounded-lg">
-                    <button onclick="delDoc(doc(db, 'slideshow', '${s.id}'))" class="ml-auto text-red-500 font-bold text-xs uppercase">Delete</button>
+                list.innerHTML = slides.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <img src="${s.url}" class="w-16 h-10 object-cover rounded-lg shadow-sm">
+                    <button onclick="deleteDoc(doc(db, 'slideshow', '${s.id}'))" class="ml-auto text-red-500 font-bold text-xs uppercase tracking-tighter">Remove</button>
                 </div>`).join('');
                 if(timer) clearInterval(timer);
                 if(slides.length > 1) timer = setInterval(() => {
                     const els = document.querySelectorAll('.slide');
+                    if(!els[curIdx]) return;
                     els[curIdx].classList.remove('active');
                     curIdx = (curIdx + 1) % els.length;
                     els[curIdx].classList.add('active');
                 }, 5000);
+            } else {
+                slider.innerHTML = `<div class="absolute inset-0 flex items-center justify-center text-slate-300 font-bold uppercase tracking-widest bg-slate-50">Upload Classroom Photos as Admin</div>`;
             }
         });
 
-        // --- CONTENT HUB ---
+        // --- CONTENT LOGIC ---
         let rawRes = []; let filter = 'all';
         onSnapshot(collection(db, "resources"), (snap) => { rawRes = snap.docs.map(d => ({id: d.id, ...d.data()})); draw(); });
 
-        window.filterType = (t) => { filter = t; document.getElementById('hubTitle').innerText = t === 'all' ? 'Resource Hub' : (t === 'video' ? 'Video Lectures' : 'Study Notes'); draw(); };
+        window.filterType = (t) => { 
+            filter = t; 
+            document.getElementById('hubTitle').innerText = t === 'all' ? 'Resource Hub' : (t === 'video' ? 'Video Lectures' : 'Study Notes');
+            draw(); 
+        };
         window.handleSearch = () => draw();
 
         const draw = () => {
@@ -202,18 +234,18 @@
             const grid = document.getElementById('resourceGrid');
             const isAdmin = auth.currentUser ? '' : 'hidden';
             grid.innerHTML = rawRes.filter(m => (filter === 'all' || m.type === filter) && m.title.toLowerCase().includes(q)).map(m => `
-                <div class="bg-white p-8 rounded-[2rem] border border-slate-100 hover:shadow-2xl transition-all">
+                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 hover:shadow-2xl transition-all duration-300">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-12 h-12 ${m.type==='video'?'bg-red-50 text-red-500':'bg-indigo-50 text-indigo-600'} rounded-2xl flex items-center justify-center shadow-inner">
                             <i class="fas ${m.type==='video'?'fa-play':'fa-file-pdf'}"></i>
                         </div>
                         <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest pt-2">${m.level}</span>
                     </div>
-                    <h3 class="text-xl font-extrabold text-slate-900 mb-3">${m.title}</h3>
+                    <h3 class="text-xl font-extrabold text-slate-900 mb-2">${m.title}</h3>
                     <p class="text-slate-400 text-sm mb-10 line-clamp-2">${m.desc}</p>
-                    <div class="flex justify-between items-center pt-6 border-t">
-                        ${m.type === 'video' ? `<button onclick="viewVideo('${m.url}')" class="text-indigo-600 font-bold">Watch Video</button>` : `<a href="${m.url}" target="_blank" class="text-slate-900 font-bold">Download Note</a>`}
-                        <button onclick="delRes('${m.id}')" class="${isAdmin} text-red-300"><i class="fas fa-trash"></i></button>
+                    <div class="flex justify-between items-center pt-6 border-t border-slate-50">
+                        ${m.type === 'video' ? `<button onclick="viewVideo('${m.url}')" class="text-indigo-600 font-bold hover:translate-x-1 transition">Watch Lesson</button>` : `<a href="${m.url}" target="_blank" class="text-slate-900 font-bold">Open Notes</a>`}
+                        <button onclick="delRes('${m.id}')" class="${isAdmin} text-red-300 hover:text-red-600"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -222,10 +254,8 @@
         window.delRes = (id) => confirm("Delete this?") && deleteDoc(doc(db, "resources", id));
         window.addMaterial = async () => {
             await addDoc(collection(db, "resources"), { 
-                title: document.getElementById('resTitle').value, 
-                type: document.getElementById('resType').value, 
-                level: document.getElementById('resLevel').value, 
-                url: document.getElementById('resUrl').value, 
+                title: document.getElementById('resTitle').value, type: document.getElementById('resType').value, 
+                level: document.getElementById('resLevel').value, url: document.getElementById('resUrl').value, 
                 desc: document.getElementById('resDesc').value 
             });
             toggle('resourceModal');
@@ -239,7 +269,7 @@
         window.closeVideo = () => { document.getElementById('vFrame').src = ""; toggle('videoModal'); };
 
         // --- AUTH ---
-        window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); toggle('loginModal'); } catch (e) { alert(e.message); } };
+        window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); toggle('loginModal'); } catch (e) { alert("Login failed"); } };
         window.logout = () => signOut(auth);
         onAuthStateChanged(auth, (user) => {
             const isAdm = !!user;
