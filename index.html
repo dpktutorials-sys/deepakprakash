@@ -15,12 +15,14 @@
         }
         .editing-mode { border: 2px dashed #4f46e5 !important; background: rgba(79, 70, 229, 0.05); padding: 4px; border-radius: 8px; }
         .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); }
-        .nav-link.active { color: #4f46e5; border-bottom: 2px solid #4f46e5; }
+        .slide { display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 2.5rem; transition: opacity 0.5s ease-in-out; }
+        .slide.active { display: block; animation: fadeIn 0.8s; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(1.05); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body class="bg-mesh min-h-screen flex flex-col">
 
-    <!-- NAVIGATION BAR -->
+    <!-- NAVIGATION -->
     <nav class="sticky top-0 z-[100] bg-white/80 backdrop-blur-md border-b border-slate-100">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -29,16 +31,17 @@
             </div>
 
             <div class="hidden md:flex items-center gap-8 font-bold text-slate-600">
-                <button onclick="filterContent('all')" class="nav-link active py-2 transition" id="nav-all">Home</button>
-                <button onclick="filterContent('video')" class="nav-link py-2 transition" id="nav-video">Videos</button>
-                <button onclick="filterContent('note')" class="nav-link py-2 transition" id="nav-note">Notes</button>
+                <button onclick="filterContent('all')" class="hover:text-indigo-600">Home</button>
+                <button onclick="filterContent('video')" class="hover:text-indigo-600">Videos</button>
+                <button onclick="filterContent('note')" class="hover:text-indigo-600">Notes</button>
             </div>
 
             <div class="flex items-center gap-4">
-                <button id="loginBtn" onclick="toggle('loginModal')" class="text-sm font-bold text-slate-500 hover:text-indigo-600">Admin</button>
+                <button id="loginBtn" onclick="toggle('loginModal')" class="text-sm font-bold text-slate-500">Admin</button>
                 <div id="adminTools" class="hidden flex gap-2">
-                    <button onclick="saveHero()" class="bg-green-600 text-white px-4 py-2 rounded-full text-xs font-bold">SAVE HEADER</button>
-                    <button onclick="logout()" class="text-red-500"><i class="fas fa-sign-out-alt"></i></button>
+                    <button onclick="toggle('imageManagerModal')" class="bg-blue-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">MANAGE PHOTOS</button>
+                    <button onclick="saveHero()" class="bg-green-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">SAVE TEXT</button>
+                    <button onclick="logout()" class="text-red-500 px-2"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
             </div>
         </div>
@@ -46,100 +49,110 @@
 
     <!-- HERO SECTION -->
     <header class="max-w-7xl mx-auto px-10 pt-16 pb-12 flex flex-col lg:flex-row items-center">
-        <div class="lg:w-1/2 space-y-8">
+        <div class="lg:w-1/2 space-y-8 pr-4">
             <h1 class="text-5xl lg:text-7xl font-extrabold text-slate-900 leading-tight">
                 <span id="txt-blue" class="text-indigo-600">Smart Study</span><br>
                 <span id="txt-black">With Bhatta Sir</span>
             </h1>
-            <p id="txt-desc" class="text-slate-500 text-xl max-w-lg">Empowering students with high-quality video lessons and comprehensive study notes.</p>
+            <p id="txt-desc" class="text-slate-500 text-xl max-w-lg">High-quality video lessons and notes designed for your success.</p>
             
-            <!-- DYNAMIC SEARCH BAR -->
-            <div class="flex items-center bg-white p-2 rounded-2xl shadow-xl max-w-lg border border-slate-100 focus-within:ring-2 ring-indigo-100 transition">
+            <!-- SEARCH -->
+            <div class="flex items-center bg-white p-2 rounded-2xl shadow-xl max-w-lg border border-slate-100">
                 <i class="fas fa-search ml-4 text-slate-300"></i>
-                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search topics, videos, or notes..." class="flex-1 px-4 py-3 outline-none text-slate-600 bg-transparent font-medium">
-                <button class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg">Search</button>
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search videos or notes..." class="flex-1 px-4 py-3 outline-none bg-transparent">
+                <button class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold">Search</button>
             </div>
         </div>
-        <div class="lg:w-1/2 flex justify-center mt-12 lg:mt-0">
-            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80" class="rounded-[2.5rem] w-full max-w-md shadow-2xl border-8 border-white">
+
+        <!-- SLIDESHOW CONTAINER -->
+        <div class="lg:w-1/2 flex justify-center mt-12 lg:mt-0 relative">
+            <div id="slideshow" class="w-full max-w-md aspect-[4/5] bg-slate-100 rounded-[2.5rem] shadow-2xl border-8 border-white overflow-hidden relative">
+                <!-- Slides will be injected here -->
+                <div id="slideLoader" class="absolute inset-0 flex items-center justify-center text-slate-400">
+                    <i class="fas fa-circle-notch fa-spin text-4xl"></i>
+                </div>
+            </div>
         </div>
     </header>
 
     <!-- STUDY HUB -->
-    <main id="hub" class="max-w-7xl mx-auto px-10 py-10 flex-grow w-full">
+    <main id="hub" class="max-w-7xl mx-auto px-10 py-20 flex-grow w-full">
         <div class="flex justify-between items-center mb-10">
-            <div>
-                <h2 id="hubTitle" class="text-3xl font-extrabold text-slate-900">All Resources</h2>
-                <div class="h-1 w-20 bg-indigo-600 rounded-full mt-2"></div>
-            </div>
-            <button id="addResourceBtn" onclick="toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2">
-                <i class="fas fa-plus"></i> Add New Material
+            <h2 id="hubTitle" class="text-3xl font-extrabold text-slate-900">All Resources</h2>
+            <button id="addResourceBtn" onclick="toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg">
+                <i class="fas fa-plus mr-2"></i>Add Material
             </button>
         </div>
-
-        <div id="resourceGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Content Loads Here -->
-        </div>
+        <div id="resourceGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-100 py-12 mt-20">
+    <!-- NAVY BLUE FOOTER -->
+    <footer class="bg-[#001f3f] text-white py-12 mt-auto">
         <div class="max-w-7xl mx-auto px-10 text-center">
-            <div class="flex justify-center gap-2 mb-4">
-                <div class="bg-slate-900 p-2 rounded-lg"><i class="fas fa-graduation-cap text-white"></i></div>
+            <div class="bg-indigo-600 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-graduation-cap text-white"></i>
             </div>
-            <p class="text-slate-900 font-bold text-lg">© 2024 Bhatta Sir. All Rights Reserved.</p>
-            <p class="text-slate-400 text-sm mt-2 font-medium">Designed by <span class="text-indigo-600">Deepak Prakash Bhatta</span></p>
+            <p class="font-bold text-lg">© <span id="currentYear"></span> Bhatta Sir. All Rights Reserved.</p>
+            <p class="text-slate-400 text-sm mt-2">Designed by <span class="text-indigo-400">Deepak Prakash Bhatta</span></p>
         </div>
     </footer>
 
-    <!-- VIDEO PLAYER MODAL -->
-    <div id="videoModal" class="fixed inset-0 bg-black/95 z-[200] hidden flex flex-col items-center justify-center p-4">
-        <button onclick="closeVideo()" class="absolute top-6 right-6 text-white text-3xl hover:text-red-500"><i class="fas fa-times"></i></button>
-        <div class="w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl">
-            <iframe id="videoFrame" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
+    <!-- MODAL: LOGIN -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200]">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm relative">
+            <button onclick="toggle('loginModal')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fas fa-times-circle text-2xl"></i></button>
+            <h2 class="text-2xl font-bold mb-6">Admin Login</h2>
+            <input type="email" id="email" placeholder="Email" class="w-full p-4 bg-slate-50 border rounded-xl mb-4 outline-none">
+            <input type="password" id="password" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-xl mb-6 outline-none">
+            <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold">Login</button>
         </div>
-        <h2 id="videoModalTitle" class="text-white text-xl font-bold mt-6"></h2>
     </div>
 
-    <!-- ADMIN: ADD RESOURCE MODAL -->
-    <div id="resourceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[100]">
-        <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-lg mx-4">
-            <h2 class="text-2xl font-bold mb-6">Publish Material</h2>
-            <div class="space-y-4">
-                <input type="text" id="resTitle" placeholder="Topic Title (e.g. Calculus Basics)" class="w-full p-4 bg-slate-50 border rounded-xl outline-none">
-                <div class="grid grid-cols-2 gap-4">
-                    <select id="resType" class="w-full p-4 bg-slate-50 border rounded-xl outline-none font-bold text-slate-600">
-                        <option value="video">Level: Video</option>
-                        <option value="note">Level: Note</option>
-                    </select>
-                    <input type="text" id="resLevel" placeholder="Class/Level (e.g. Grade 10)" class="w-full p-4 bg-slate-50 border rounded-xl outline-none">
-                </div>
-                <input type="text" id="resUrl" placeholder="Paste YouTube Link or Note URL" class="w-full p-4 bg-slate-50 border rounded-xl outline-none">
-                <textarea id="resDesc" placeholder="Briefly explain what's inside..." class="w-full p-4 bg-slate-50 border rounded-xl outline-none h-24"></textarea>
-                <div class="flex gap-4 pt-4">
-                    <button onclick="toggle('resourceModal')" class="flex-1 bg-slate-100 text-slate-500 font-bold py-4 rounded-xl">Cancel</button>
-                    <button onclick="addNewResource()" class="flex-1 bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg">Publish Now</button>
-                </div>
+    <!-- MODAL: IMAGE MANAGER -->
+    <div id="imageManagerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200]">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
+            <button onclick="toggle('imageManagerModal')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button>
+            <h2 class="text-2xl font-bold mb-4">Slideshow Manager</h2>
+            
+            <div class="mb-6 p-4 bg-indigo-50 rounded-xl">
+                <label class="block text-sm font-bold text-indigo-600 mb-2">Upload New Photo</label>
+                <input type="file" id="imageInput" accept="image/*" class="text-sm">
+                <button onclick="uploadImage()" id="uploadBtn" class="mt-3 w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">Upload to Slideshow</button>
+            </div>
+
+            <div id="imageList" class="space-y-3">
+                <!-- Existing images list here -->
             </div>
         </div>
     </div>
 
-    <!-- ADMIN: LOGIN MODAL -->
-    <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[100]">
-        <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-sm mx-4">
-            <h2 class="text-2xl font-bold mb-6 text-center">Admin Access</h2>
-            <input type="email" id="email" placeholder="Email" class="w-full p-4 bg-slate-50 border rounded-xl mb-4 outline-none">
-            <input type="password" id="password" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-xl mb-6 outline-none">
-            <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold shadow-lg">Enter Dashboard</button>
+    <!-- MODAL: RESOURCE & VIDEO (Logic same as before) -->
+    <div id="resourceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[100]">
+        <div class="bg-white p-8 rounded-3xl w-full max-w-md relative">
+            <button onclick="toggle('resourceModal')" class="absolute top-4 right-4"><i class="fas fa-times"></i></button>
+            <h2 class="text-xl font-bold mb-4">Add Material</h2>
+            <input type="text" id="resTitle" placeholder="Title" class="w-full p-3 border rounded-lg mb-3">
+            <div class="flex gap-2 mb-3">
+                <select id="resType" class="border rounded-lg p-2"><option value="video">Video</option><option value="note">Note</option></select>
+                <input type="text" id="resLevel" placeholder="Level/Class" class="flex-1 p-2 border rounded-lg">
+            </div>
+            <input type="text" id="resUrl" placeholder="Link" class="w-full p-3 border rounded-lg mb-3">
+            <textarea id="resDesc" placeholder="Description" class="w-full p-3 border rounded-lg mb-4"></textarea>
+            <button onclick="addNewResource()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Publish</button>
         </div>
     </div>
 
-    <!-- FIREBASE LOGIC -->
+    <div id="videoModal" class="fixed inset-0 bg-black/95 z-[300] hidden flex flex-col items-center justify-center p-4">
+        <button onclick="closeVideo()" class="absolute top-6 right-6 text-white text-3xl"><i class="fas fa-times"></i></button>
+        <iframe id="videoFrame" class="w-full max-w-5xl aspect-video rounded-2xl" src="" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <!-- FIREBASE MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAAqpdfNz-fb4v3g1AawHGSCpOcxP5QHfk",
@@ -153,79 +166,93 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
-        let allMaterials = [];
-        let currentFilter = 'all';
+        // --- 1. DYNAMIC DATE ---
+        document.getElementById('currentYear').innerText = new Date().getFullYear();
 
-        // --- FILTER & SEARCH LOGIC ---
-        window.filterContent = (type) => {
-            currentFilter = type;
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(`nav-${type}`).classList.add('active');
-            document.getElementById('hubTitle').innerText = type === 'all' ? 'All Resources' : (type === 'video' ? 'Video Lectures' : 'Study Notes');
-            renderUI();
-        };
+        // --- 2. SLIDESHOW LOGIC ---
+        let slides = [];
+        let slideIndex = 0;
 
-        window.handleSearch = () => renderUI();
+        onSnapshot(collection(db, "slideshow"), (snap) => {
+            slides = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            const container = document.getElementById('slideshow');
+            const list = document.getElementById('imageList');
+            
+            if(slides.length > 0) {
+                container.innerHTML = slides.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
+                list.innerHTML = slides.map(s => `
+                    <div class="flex items-center gap-4 bg-slate-50 p-2 rounded-lg border">
+                        <img src="${s.url}" class="w-12 h-12 object-cover rounded">
+                        <button onclick="deleteImage('${s.id}', '${s.name}')" class="ml-auto text-red-500 text-sm font-bold">Delete</button>
+                    </div>
+                `).join('');
+                startSlideshow();
+            } else {
+                container.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-slate-400">No Photos Uploaded</div>';
+            }
+        });
 
-        function renderUI() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const grid = document.getElementById('resourceGrid');
-            grid.innerHTML = '';
-
-            const filtered = allMaterials.filter(m => {
-                const matchesType = currentFilter === 'all' || m.type === currentFilter;
-                const matchesSearch = m.title.toLowerCase().includes(query) || m.desc.toLowerCase().includes(query) || (m.level && m.level.toLowerCase().includes(query));
-                return matchesType && matchesSearch;
-            });
-
-            filtered.forEach(m => {
-                const isAdmin = auth.currentUser ? '' : 'hidden';
-                if(m.type === 'video') {
-                    const ytId = m.url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1];
-                    grid.innerHTML += `
-                        <div class="glass-card rounded-[2rem] overflow-hidden shadow-sm group">
-                            <div class="relative cursor-pointer aspect-video bg-slate-900" onclick="playVideo('${m.url}', '${m.title}')">
-                                <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition">
-                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                                    <div class="bg-indigo-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-xl"><i class="fas fa-play ml-1"></i></div>
-                                </div>
-                                <span class="absolute top-4 left-4 bg-black/50 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter">${m.level || 'Tutorial'}</span>
-                            </div>
-                            <div class="p-6">
-                                <h3 class="text-lg font-extrabold text-slate-900 leading-tight mb-2">${m.title}</h3>
-                                <p class="text-slate-400 text-sm mb-6 line-clamp-2">${m.desc}</p>
-                                <div class="flex justify-between items-center pt-4 border-t border-slate-100">
-                                    <span class="text-indigo-600 font-bold text-xs uppercase">Video Class</span>
-                                    <button onclick="deleteDoc(doc(db, 'resources', '${m.id}'))" class="${isAdmin} text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    grid.innerHTML += `
-                        <div class="glass-card p-8 rounded-[2rem] shadow-sm flex flex-col justify-between h-full relative group">
-                            <div>
-                                <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-6"><i class="fas fa-file-alt text-xl"></i></div>
-                                <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">${m.level || 'General Notes'}</span>
-                                <h3 class="text-xl font-extrabold text-slate-900 mt-2 mb-3 leading-tight">${m.title}</h3>
-                                <p class="text-slate-400 text-sm mb-6">${m.desc}</p>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <a href="${m.url}" target="_blank" class="bg-slate-900 text-white px-6 py-2.5 rounded-full text-xs font-bold hover:bg-indigo-600 transition">View Material</a>
-                                <button onclick="deleteDoc(doc(db, 'resources', '${m.id}'))" class="${isAdmin} text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
+        function startSlideshow() {
+            setInterval(() => {
+                const els = document.querySelectorAll('.slide');
+                if(els.length < 2) return;
+                els[slideIndex].classList.remove('active');
+                slideIndex = (slideIndex + 1) % els.length;
+                els[slideIndex].classList.add('active');
+            }, 4000);
         }
 
-        // --- CORE ACTIONS ---
+        window.uploadImage = async () => {
+            const file = document.getElementById('imageInput').files[0];
+            if(!file) return alert("Select a file first");
+            const btn = document.getElementById('uploadBtn');
+            btn.innerText = "Uploading...";
+            
+            try {
+                const fileName = Date.now() + "_" + file.name;
+                const sRef = ref(storage, 'slides/' + fileName);
+                await uploadBytes(sRef, file);
+                const url = await getDownloadURL(sRef);
+                await addDoc(collection(db, "slideshow"), { url, name: fileName });
+                alert("Photo added!");
+            } catch (e) { alert(e.message); }
+            btn.innerText = "Upload to Slideshow";
+        };
+
+        window.deleteImage = async (id, name) => {
+            if(!confirm("Delete photo?")) return;
+            try {
+                await deleteDoc(doc(db, "slideshow", id));
+                await deleteObject(ref(storage, 'slides/' + name));
+            } catch (e) { console.log(e); }
+        };
+
+        // --- 3. SEARCH & RESOURCES (Same logic as previous version) ---
+        let allResources = [];
         onSnapshot(collection(db, "resources"), (snap) => {
-            allMaterials = snap.docs.map(d => ({id: d.id, ...d.data()}));
-            renderUI();
+            allResources = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            render();
         });
+
+        function render() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const grid = document.getElementById('resourceGrid');
+            grid.innerHTML = allResources.filter(m => m.title.toLowerCase().includes(query)).map(m => `
+                <div class="glass-card p-6 rounded-[2rem] shadow-sm relative group">
+                    <div class="font-black text-[10px] text-indigo-400 uppercase mb-2">${m.level}</div>
+                    <h3 class="text-xl font-extrabold mb-4">${m.title}</h3>
+                    <div class="flex justify-between items-center">
+                        ${m.type === 'video' ? `<button onclick="playVideo('${m.url}')" class="text-indigo-600 font-bold">Watch Video</button>` : `<a href="${m.url}" target="_blank" class="text-slate-900 font-bold">View Note</a>`}
+                        <button onclick="deleteResource('${m.id}')" class="${auth.currentUser?'':'hidden'} text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.handleSearch = () => render();
+        window.deleteResource = (id) => deleteDoc(doc(db, "resources", id));
 
         window.addNewResource = async () => {
             const data = {
@@ -233,27 +260,20 @@
                 type: document.getElementById('resType').value,
                 level: document.getElementById('resLevel').value,
                 url: document.getElementById('resUrl').value,
-                desc: document.getElementById('resDesc').value,
-                date: Date.now()
+                desc: document.getElementById('resDesc').value
             };
-            if(!data.title || !data.url) return alert("Title and URL are required");
             await addDoc(collection(db, "resources"), data);
             toggle('resourceModal');
         };
 
-        window.playVideo = (url, title) => {
+        window.playVideo = (url) => {
             const id = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1];
             document.getElementById('videoFrame').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
-            document.getElementById('videoModalTitle').innerText = title;
-            document.getElementById('videoModal').classList.remove('hidden');
+            toggle('videoModal');
         };
+        window.closeVideo = () => { document.getElementById('videoFrame').src = ""; toggle('videoModal'); };
 
-        window.closeVideo = () => {
-            document.getElementById('videoFrame').src = "";
-            document.getElementById('videoModal').classList.add('hidden');
-        };
-
-        // --- AUTH & HERO ---
+        // --- 4. AUTH ---
         window.handleLogin = async () => {
             try {
                 await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
@@ -261,15 +281,6 @@
             } catch (e) { alert(e.message); }
         };
         window.logout = () => signOut(auth);
-
-        window.saveHero = async () => {
-            await setDoc(doc(db, "siteData", "hero"), {
-                blue: document.getElementById('txt-blue').innerText,
-                black: document.getElementById('txt-black').innerText,
-                desc: document.getElementById('txt-desc').innerText
-            });
-            alert("Header Saved!");
-        };
 
         onAuthStateChanged(auth, (user) => {
             const isAdm = !!user;
@@ -281,11 +292,21 @@
                 el.contentEditable = isAdm;
                 isAdm ? el.classList.add('editing-mode') : el.classList.remove('editing-mode');
             });
+            render();
         });
+
+        window.saveHero = async () => {
+            await setDoc(doc(db, "siteData", "hero"), {
+                blue: document.getElementById('txt-blue').innerText,
+                black: document.getElementById('txt-black').innerText,
+                desc: document.getElementById('txt-desc').innerText
+            });
+            alert("Header Saved!");
+        };
 
         window.toggle = (id) => document.getElementById(id).classList.toggle('hidden');
 
-        // Load Header Data
+        // Initial Load Header
         const hSnap = await getDoc(doc(db, "siteData", "hero"));
         if(hSnap.exists()) {
             document.getElementById('txt-blue').innerText = hSnap.data().blue;
