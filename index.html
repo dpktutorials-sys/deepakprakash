@@ -10,10 +10,38 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
         .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .slider-wrap { position: relative; width: 100%; height: 70vh; overflow: hidden; background: #0f172a; }
-        .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s ease-in-out; }
+        
+        /* AUTO-FIT SLIDER CSS */
+        .slider-wrap { 
+            position: relative; 
+            width: 100%; 
+            height: 40vh; /* Shorter on mobile */
+            overflow: hidden; 
+            background: #0f172a; 
+        }
+        @media (min-width: 1024px) {
+            .slider-wrap { height: 70vh; } /* Taller on desktop */
+        }
+        .slide { 
+            position: absolute; 
+            inset: 0; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* This makes the photo auto-fit without stretching */
+            object-position: center; /* Keeps the middle of the photo in view */
+            opacity: 0; 
+            transition: opacity 1.2s ease-in-out; 
+        }
         .slide.active { opacity: 1; }
-        .slider-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to top, #f8fafc, transparent); z-index: 10; }
+        .slider-overlay { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            height: 100px; 
+            background: linear-gradient(to top, #f8fafc, transparent); 
+            z-index: 10; 
+        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col">
@@ -26,9 +54,9 @@
                 <span class="font-extrabold text-slate-900 text-xl tracking-tighter">YOUR LEARNING SITE</span>
             </div>
             <div class="hidden md:flex items-center gap-8 font-bold text-slate-500 text-xs uppercase tracking-widest">
-                <button onclick="filterType('all')" class="hover:text-indigo-600">Home</button>
-                <button onclick="filterType('video')" class="hover:text-indigo-600">Videos</button>
-                <button onclick="filterType('note')" class="hover:text-indigo-600">Notes</button>
+                <button onclick="filterType('all')" class="hover:text-indigo-600 transition">Home</button>
+                <button onclick="filterType('video')" class="hover:text-indigo-600 transition">Videos</button>
+                <button onclick="filterType('note')" class="hover:text-indigo-600 transition">Notes</button>
             </div>
             <div class="flex items-center gap-4">
                 <button id="loginBtn" onclick="toggle('loginModal')" class="text-[10px] font-black text-slate-400 border px-4 py-2 rounded-full uppercase">Admin</button>
@@ -40,17 +68,17 @@
         </div>
     </nav>
 
-    <!-- FULL WIDTH HERO SLIDER -->
+    <!-- HERO SLIDER -->
     <div class="slider-wrap">
         <div id="slider">
             <div class="absolute inset-0 flex items-center justify-center text-slate-400 bg-slate-100 font-bold uppercase tracking-widest text-xs">
-                <i class="fas fa-spinner fa-spin mr-3"></i> Loading Classroom Gallery...
+                <i class="fas fa-spinner fa-spin mr-3"></i> Syncing Gallery...
             </div>
         </div>
         <div class="slider-overlay"></div>
     </div>
 
-    <!-- MAIN CONTENT HUB -->
+    <!-- MAIN HUB -->
     <main class="max-w-7xl mx-auto px-6 py-16 flex-grow w-full">
         <div class="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
             <div class="text-center md:text-left">
@@ -62,7 +90,7 @@
                     <i class="fas fa-search text-slate-300 mr-3"></i>
                     <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search library..." class="bg-transparent outline-none text-sm w-full font-medium">
                 </div>
-                <button id="addResBtn" onclick="toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-indigo-100 whitespace-nowrap">
+                <button id="addResBtn" onclick="toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-indigo-100">
                     <i class="fas fa-plus-circle mr-2"></i> Add Content
                 </button>
             </div>
@@ -72,7 +100,7 @@
 
     <!-- NAVY BLUE FOOTER -->
     <footer class="bg-[#001b3a] text-white py-16">
-        <div class="max-w-7xl mx-auto px-6 text-center">
+        <div class="max-w-7xl mx-auto px-10 text-center">
             <div class="bg-indigo-600 w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-2xl">
                 <i class="fas fa-graduation-cap text-white text-2xl"></i>
             </div>
@@ -85,22 +113,22 @@
     <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4">
         <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-sm relative">
             <button onclick="toggle('loginModal')" class="absolute top-6 right-6 text-slate-300 hover:text-red-500 text-2xl"><i class="fas fa-times-circle"></i></button>
-            <h2 class="text-3xl font-black text-slate-900 mb-8">Admin</h2>
+            <h2 class="text-3xl font-black text-slate-900 mb-8">Admin Access</h2>
             <input type="email" id="email" placeholder="Email" class="w-full p-4 bg-slate-50 border rounded-2xl mb-4 outline-none">
             <input type="password" id="password" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-2xl mb-8 outline-none">
-            <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">Access Dashboard</button>
+            <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">Enter Portal</button>
         </div>
     </div>
 
-    <!-- MODAL: SLIDE MANAGER (Stores as compressed text in Firestore) -->
+    <!-- MODAL: SLIDE MANAGER -->
     <div id="imageModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-lg relative max-h-[85vh] flex flex-col">
             <button onclick="toggle('imageModal')" class="absolute top-6 right-6 text-slate-300 text-2xl"><i class="fas fa-times-circle"></i></button>
-            <h2 class="text-2xl font-bold mb-6">Slider Manager</h2>
+            <h2 class="text-2xl font-bold mb-6 text-slate-900">Slider Manager</h2>
             <div class="mb-8 p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center">
                 <input type="file" id="fileInp" accept="image/*" class="text-xs w-full mb-4">
-                <button onclick="savePhoto()" id="upBtn" class="w-full bg-indigo-600 text-white py-3 rounded-2xl font-bold shadow-lg">Save to Gallery</button>
-                <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase">Auto-optimized for free hosting</p>
+                <button onclick="savePhoto()" id="upBtn" class="w-full bg-indigo-600 text-white py-3 rounded-2xl font-bold shadow-lg">Upload to Slider</button>
+                <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase">Optimized for horizontal display</p>
             </div>
             <div id="photoList" class="flex-grow overflow-y-auto space-y-4 pr-2"></div>
         </div>
@@ -117,9 +145,9 @@
                     <select id="resType" class="border rounded-2xl p-4 bg-slate-50 font-bold text-slate-500 outline-none"><option value="video">Video</option><option value="note">Note</option></select>
                     <input type="text" id="resLevel" placeholder="Class/Level" class="flex-1 p-4 border rounded-2xl bg-slate-50 outline-none">
                 </div>
-                <input type="text" id="resUrl" placeholder="Link" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none">
-                <textarea id="resDesc" placeholder="Brief info..." class="w-full p-4 border rounded-2xl bg-slate-50 outline-none h-24"></textarea>
-                <button onclick="addMaterial()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl">Publish to Hub</button>
+                <input type="text" id="resUrl" placeholder="URL Link" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none">
+                <textarea id="resDesc" placeholder="Description..." class="w-full p-4 border rounded-2xl bg-slate-50 outline-none h-24"></textarea>
+                <button onclick="addMaterial()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl">Post Now</button>
             </div>
         </div>
     </div>
@@ -135,7 +163,6 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIG (NO STORAGE BUCKET NEEDED TO PREVENT CORS)
         const firebaseConfig = {
             apiKey: "AIzaSyAAqpdfNz-fb4v3g1AawHGSCpOcxP5QHfk",
             authDomain: "your-learning-site.firebaseapp.com",
@@ -148,12 +175,12 @@
 
         document.getElementById('year').innerText = new Date().getFullYear();
 
-        // --- IMPROVED IMAGE COMPRESSION + UPLOAD ---
+        // --- IMAGE SAVER (BASE64) ---
         window.savePhoto = () => {
             const file = document.getElementById('fileInp').files[0];
-            if(!file) return alert("Please select a photo first");
+            if(!file) return alert("Select a photo first");
             const btn = document.getElementById('upBtn');
-            btn.innerText = "OPTIMIZING..."; btn.disabled = true;
+            btn.innerText = "PREPARING..."; btn.disabled = true;
 
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -161,10 +188,9 @@
                 const img = new Image();
                 img.src = e.target.result;
                 img.onload = async () => {
-                    // Create Canvas to resize and compress
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    const MAX_WIDTH = 1200;
+                    const MAX_WIDTH = 1600; // High res but optimized
                     let width = img.width;
                     let height = img.height;
 
@@ -177,17 +203,13 @@
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Convert to high-quality compressed JPEG (0.7 quality)
-                    const base64 = canvas.toDataURL('image/jpeg', 0.7);
+                    const base64 = canvas.toDataURL('image/jpeg', 0.8);
 
                     try {
-                        await addDoc(collection(db, "slideshow"), { 
-                            url: base64, 
-                            createdAt: Date.now() 
-                        });
-                        alert("Classroom photo added!");
+                        await addDoc(collection(db, "slideshow"), { url: base64, createdAt: Date.now() });
+                        alert("Photo added successfully!");
                     } catch (err) { alert("Error: " + err.message); }
-                    btn.innerText = "Save to Gallery"; btn.disabled = false;
+                    btn.innerText = "Upload to Slider"; btn.disabled = false;
                     document.getElementById('fileInp').value = "";
                 };
             };
@@ -201,9 +223,9 @@
             const list = document.getElementById('photoList');
             if(slides.length > 0) {
                 slider.innerHTML = slides.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
-                list.innerHTML = slides.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                list.innerHTML = slides.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-3 rounded-xl border">
                     <img src="${s.url}" class="w-16 h-10 object-cover rounded-lg shadow-sm">
-                    <button onclick="deleteDoc(doc(db, 'slideshow', '${s.id}'))" class="ml-auto text-red-500 font-bold text-xs uppercase tracking-tighter">Remove</button>
+                    <button onclick="deleteDoc(doc(db, 'slideshow', '${s.id}'))" class="ml-auto text-red-500 font-bold text-[10px] uppercase">Remove</button>
                 </div>`).join('');
                 if(timer) clearInterval(timer);
                 if(slides.length > 1) timer = setInterval(() => {
@@ -214,11 +236,11 @@
                     els[curIdx].classList.add('active');
                 }, 5000);
             } else {
-                slider.innerHTML = `<div class="absolute inset-0 flex items-center justify-center text-slate-300 font-bold uppercase tracking-widest bg-slate-50">Upload Classroom Photos as Admin</div>`;
+                slider.innerHTML = `<div class="absolute inset-0 flex items-center justify-center text-slate-300 font-bold uppercase tracking-widest bg-slate-50">Log in as Admin to upload slides</div>`;
             }
         });
 
-        // --- CONTENT LOGIC ---
+        // --- CONTENT DRAWING ---
         let rawRes = []; let filter = 'all';
         onSnapshot(collection(db, "resources"), (snap) => { rawRes = snap.docs.map(d => ({id: d.id, ...d.data()})); draw(); });
 
@@ -236,7 +258,7 @@
             grid.innerHTML = rawRes.filter(m => (filter === 'all' || m.type === filter) && m.title.toLowerCase().includes(q)).map(m => `
                 <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 hover:shadow-2xl transition-all duration-300">
                     <div class="flex justify-between items-start mb-6">
-                        <div class="w-12 h-12 ${m.type==='video'?'bg-red-50 text-red-500':'bg-indigo-50 text-indigo-600'} rounded-2xl flex items-center justify-center shadow-inner">
+                        <div class="w-12 h-12 ${m.type==='video'?'bg-red-50 text-red-500':'bg-indigo-50 text-indigo-600'} rounded-2xl flex items-center justify-center">
                             <i class="fas ${m.type==='video'?'fa-play':'fa-file-pdf'}"></i>
                         </div>
                         <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest pt-2">${m.level}</span>
@@ -244,14 +266,14 @@
                     <h3 class="text-xl font-extrabold text-slate-900 mb-2">${m.title}</h3>
                     <p class="text-slate-400 text-sm mb-10 line-clamp-2">${m.desc}</p>
                     <div class="flex justify-between items-center pt-6 border-t border-slate-50">
-                        ${m.type === 'video' ? `<button onclick="viewVideo('${m.url}')" class="text-indigo-600 font-bold hover:translate-x-1 transition">Watch Lesson</button>` : `<a href="${m.url}" target="_blank" class="text-slate-900 font-bold">Open Notes</a>`}
-                        <button onclick="delRes('${m.id}')" class="${isAdmin} text-red-300 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                        ${m.type === 'video' ? `<button onclick="viewVideo('${m.url}')" class="text-indigo-600 font-bold">Watch Lesson</button>` : `<a href="${m.url}" target="_blank" class="text-slate-900 font-bold">View Material</a>`}
+                        <button onclick="delRes('${m.id}')" class="${isAdmin} text-red-300"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
         };
 
-        window.delRes = (id) => confirm("Delete this?") && deleteDoc(doc(db, "resources", id));
+        window.delRes = (id) => confirm("Delete this content?") && deleteDoc(doc(db, "resources", id));
         window.addMaterial = async () => {
             await addDoc(collection(db, "resources"), { 
                 title: document.getElementById('resTitle').value, type: document.getElementById('resType').value, 
