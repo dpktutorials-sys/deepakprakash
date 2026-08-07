@@ -4,7 +4,561 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DPK TUTORIALS - Educational Site</title>
+    <script src="https://cdn.tailwindcss.com"></script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPK TUTORIALS - Educational Site</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .brand-font { font-family: 'Orbitron', sans-serif; }
+        .dpk-red { color: #FF0000; } .tut-blue { color: #0000FF; }
+        .subtitle-green { color: #22c55e; font-size: 9px; font-weight: 800; letter-spacing: 1px; }
+        .glass-nav { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); transition: 0.4s; position: fixed; top: 0; width: 100%; z-index: 100; overflow: hidden; }
+        .nav-hidden { transform: translateY(-100%); }
+
+        /* ---- Waveform spanning the full nav bar: an ECG-style heart-rate trace + a 50Hz signal line ---- */
+        .nav-wave-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .nav-wave-bg path { fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+        .nav-wave-bg text { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* left-to-right sweep: pattern is drawn twice, then slides from -50% back to 0 */
+        @keyframes navWaveLTR {
+            from { transform: translateX(-50%); }
+            to { transform: translateX(0); }
+        }
+        .nav-wave-heart { animation: navWaveLTR 4s linear infinite; }
+        .nav-wave-50hz { animation: navWaveLTR 3s linear infinite; opacity: 0.6; }
+        .nav-wave-ambient { animation: navWaveLTR 11s linear infinite; opacity: 0.35; }
+        .nav-content { position: relative; z-index: 1; }
+        @media (prefers-reduced-motion: reduce) {
+            .nav-wave-heart, .nav-wave-50hz, .nav-wave-ambient { animation: none; }
+        }
+        .slider-wrap { position: relative; width: 100%; height: 45vh; overflow: hidden; background: #0f172a; margin-top: 80px; }
+        @media (min-width: 1024px) { .slider-wrap { height: 75vh; } }
+        .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 1s; }
+        .slide.active { opacity: 1; }
+        .color-pdf { background: linear-gradient(135deg, #e11d48, #991b1b); }
+        .color-doc { background: linear-gradient(135deg, #facc15, #a16207); }
+        .color-ppt { background: linear-gradient(135deg, #22c55e, #166534); }
+        .color-sim { background: linear-gradient(135deg, #8b5cf6, #4c1d95); }
+        .card-entry { background: white; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; height: 100%; display: flex; flex-direction: column; transition: 0.3s; }
+        .card-entry:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); }
+        .thumb-box { position: relative; aspect-ratio: 16/9; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; cursor: pointer; }
+        .thumb-img { width: 100%; height: 100%; object-fit: cover; }
+    </style>
+</head>
+<body class="bg-[#f8fafc] min-h-screen">
+
+    <!-- NAVIGATION -->
+    <nav id="mainNav" class="glass-nav border-b border-white/20">
+        <svg id="navWaveBg" class="nav-wave-bg" viewBox="0 0 1000 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="nav-content max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex flex-col cursor-pointer" onclick="window.location.reload()">
+                <div class="flex items-center brand-font text-2xl lg:text-3xl">
+                    <span class="dpk-red">DPK</span> <span class="tut-blue ml-2 uppercase">TUTORIALS</span>
+                </div>
+                <div class="subtitle-green uppercase">Out and Out Educational Site</div>
+            </div>
+            <div class="hidden md:flex items-center gap-8 font-bold text-slate-500 text-[10px] uppercase">
+                <button onclick="window.filterType('all')">Home</button>
+                <button onclick="window.filterType('video')">Videos</button>
+                <button onclick="window.filterType('note')">Notes</button>
+                <button onclick="window.filterType('sim')">Simulations</button>
+            </div>
+            <div class="flex gap-4">
+                <button id="loginBtn" onclick="window.toggle('loginModal')" class="text-[10px] font-bold border px-4 py-2 rounded-full">Admin</button>
+                <div id="adminPanel" class="hidden flex gap-2">
+                    <button onclick="window.toggle('imageModal')" class="bg-indigo-600 text-white text-[10px] px-5 py-2 rounded-full font-bold">SLIDES</button>
+                    <button onclick="window.logout()" class="text-red-500"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SLIDER -->
+    <div class="slider-wrap"><div id="slider" class="w-full h-full"></div></div>
+
+    <!-- MAIN HUB -->
+    <main class="max-w-7xl mx-auto px-6 py-16">
+        <div class="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+            <h2 id="hubTitle" class="text-4xl font-black text-slate-900 tracking-tighter uppercase">Resource Hub</h2>
+            <div class="flex gap-4 w-full md:w-auto">
+                <input type="text" id="searchInput" oninput="window.handleSearch()" placeholder="Search library..." class="bg-white border rounded-2xl px-6 py-4 w-full md:w-80 outline-none focus:border-indigo-600">
+                <button id="addResBtn" onclick="window.toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold whitespace-nowrap shadow-lg">Add Content</button>
+            </div>
+        </div>
+        <div id="resourceGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#001b3a] text-white py-16 text-center">
+        <p class="font-bold text-xl uppercase brand-font"><span class="dpk-red">DPK</span> <span class="tut-blue">TUTORIALS</span></p>
+        <p class="text-slate-400 text-sm mt-4 uppercase">Designed by Deepak Prakash Bhatta</p>
+        <p class="text-slate-500 text-[10px] mt-2">© <span id="year"></span> All Rights Reserved</p>
+    </footer>
+
+    <!-- VIDEO HUB (dedicated player, uses the YouTube IFrame API for reliable playback + error handling) -->
+    <div id="videoHubModal" onclick="window.handleVideoOutsideClick(event)" class="fixed inset-0 bg-black/98 z-[300] hidden flex flex-col items-center justify-center p-4">
+        <button onclick="window.closeVideoHub()" class="absolute top-6 right-6 text-white text-6xl font-thin hover:text-red-500">&times;</button>
+        <div class="w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl relative">
+            <div id="ytPlayerMount" class="w-full h-full"></div>
+            <div id="videoFallback" class="hidden absolute inset-0 flex flex-col items-center justify-center text-white text-center p-8 gap-4 bg-slate-900">
+                <i class="fas fa-triangle-exclamation text-4xl text-amber-400"></i>
+                <p id="videoFallbackMsg" class="font-bold max-w-md">This video can't be played here.</p>
+                <a id="videoFallbackLink" href="#" target="_blank" rel="noopener noreferrer" class="bg-red-600 hover:bg-red-500 transition text-white px-6 py-3 rounded-2xl font-black uppercase text-xs tracking-widest">Watch on YouTube</a>
+            </div>
+        </div>
+        <h3 id="videoModalTitle" class="text-white mt-6 font-bold uppercase tracking-widest text-center"></h3>
+    </div>
+
+    <!-- SIMULATION VIEWER (raw/pasted HTML content only) -->
+    <div id="contentModal" onclick="window.handleOutsideClick(event)" class="fixed inset-0 bg-black/98 z-[300] hidden flex flex-col items-center justify-center p-4">
+        <button onclick="window.closeContent()" class="absolute top-6 right-6 text-white text-6xl font-thin hover:text-red-500">&times;</button>
+        <div id="modalBody" class="w-full h-[85vh] bg-black rounded-3xl overflow-hidden shadow-2xl relative">
+            <iframe id="cFrame" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+        <h3 id="modalTitle" class="text-white mt-6 font-bold uppercase tracking-widest text-center"></h3>
+    </div>
+
+    <!-- MODAL: ADD -->
+    <div id="resourceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4 overflow-y-auto">
+        <div class="bg-white p-8 rounded-[2rem] w-full max-w-lg my-8 relative">
+            <h2 class="text-2xl font-bold mb-6">Publish Content</h2>
+            <div class="space-y-4">
+                <input type="text" id="resTitle" placeholder="Title" class="w-full p-4 border rounded-2xl outline-none">
+                <div class="flex gap-4">
+                    <select id="resType" class="border rounded-2xl p-4 bg-white outline-none font-bold" onchange="window.updateForm(this.value)">
+                        <option value="video">Type: Video</option>
+                        <option value="note">Type: Note/File</option>
+                        <option value="sim">Type: Simulation</option>
+                    </select>
+                    <input type="text" id="resLevel" placeholder="Level/Grade" class="flex-1 p-4 border rounded-2xl outline-none">
+                </div>
+                <div id="htmlPasteBox" class="hidden">
+                    <textarea id="resHtmlContent" placeholder="Paste HTML code here..." class="w-full p-4 border rounded-2xl h-40 text-xs font-mono"></textarea>
+                </div>
+                <div id="autoThumbBox" class="hidden p-4 bg-indigo-50 rounded-2xl border-2 border-dashed border-indigo-200 text-center">
+                    <label class="text-[10px] font-bold uppercase">Upload File (opens in a new tab; DOC/PPT need a Link below instead)</label>
+                    <input type="file" id="resFile" accept=".pdf,.html,image/*" class="text-xs mt-2 w-full">
+                </div>
+                <input type="text" id="resUrl" placeholder="Link (YouTube, or Drive link for DOC/PPT)" class="w-full p-4 border rounded-2xl outline-none">
+                <textarea id="resDesc" placeholder="Description..." class="w-full p-4 border rounded-2xl h-24 outline-none"></textarea>
+                <button onclick="window.addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black shadow-xl">PUBLISH</button>
+                <button onclick="window.toggle('resourceModal')" class="w-full text-slate-400 mt-2 font-bold uppercase text-xs">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN SYSTEM -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-10 rounded-[3rem] w-full max-w-sm"><h2 class="text-2xl font-bold mb-6 text-center">Admin Login</h2><input type="email" id="email" placeholder="Email" class="w-full p-4 border rounded-2xl mb-4"><input type="password" id="password" placeholder="Password" class="w-full p-4 border rounded-2xl mb-8"><button onclick="window.handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold">Login</button></div></div>
+    <div id="imageModal" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-8 rounded-[3rem] w-full max-w-lg flex flex-col max-h-[80vh]"><h2 class="text-xl font-bold mb-4">Slider Gallery</h2><input type="file" id="fileInp" accept="image/*" class="mb-4 text-xs"><button onclick="window.savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-3 rounded-xl font-bold">Upload Slide</button><div id="photoList" class="overflow-y-auto mt-6 space-y-3"></div><button onclick="window.toggle('imageModal')" class="mt-4 text-slate-400 font-bold uppercase text-[10px]">Close</button></div></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, collection, addDoc, onSnapshot, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyAAqpdfNz-fb4v3g1AawHGSCpOcxP5QHfk", authDomain: "your-learning-site.firebaseapp.com", projectId: "your-learning-site" };
+        const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app);
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+        document.getElementById('year').innerText = new Date().getFullYear();
+
+        // Build the nav bar's waveform:
+        //  - an ECG-style heart-rate trace (baseline + P/QRS/T spike, repeating like a pulse monitor)
+        //  - a 50Hz signal line (a nod to mains frequency here in Nepal) - a tight, dense sine
+        //  - a slow ambient sine wave underneath for depth
+        // All three sweep strictly LEFT -> RIGHT, and are drawn twice back-to-back so the loop
+        // (translateX -50% -> 0) wraps with no visible seam.
+        (() => {
+            const V = 1000; // svg viewBox width (one visible "screen")
+
+            const buildSinePath = (amplitude, wavelength, phase, baseline, step = 4) => {
+                let d = '';
+                for (let x = 0; x <= V * 2; x += step) {
+                    const y = baseline + amplitude * Math.sin((x / wavelength) * 2 * Math.PI + phase);
+                    d += (x === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+                }
+                return d;
+            };
+
+            // One heartbeat as [fraction-of-period, offset-in-amplitude-units] key points:
+            // flat -> small P bump -> flat -> Q dip -> sharp R spike -> S dip -> flat -> T bump -> flat
+            const ECG_BEAT = [
+                [0.00, 0], [0.09, 0], [0.12, -0.15], [0.15, 0], [0.22, 0],
+                [0.245, 0.12], [0.26, -1.0], [0.275, 0.45], [0.29, 0],
+                [0.34, 0], [0.42, -0.28], [0.50, 0], [1.00, 0]
+            ];
+            const buildEcgPath = (period, amplitude, baseline) => {
+                const cycles = Math.ceil((V * 2) / period);
+                let d = ''; let first = true;
+                for (let c = 0; c < cycles; c++) {
+                    const xOffset = c * period;
+                    ECG_BEAT.forEach(([xf, yu]) => {
+                        const x = xOffset + xf * period;
+                        if (x > V * 2) return;
+                        const y = baseline + yu * amplitude;
+                        d += (first ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+                        first = false;
+                    });
+                }
+                return d;
+            };
+
+            const svg = document.getElementById('navWaveBg');
+            const addPath = (d, color, opacity, cls) => {
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', d);
+                path.setAttribute('stroke', color);
+                path.setAttribute('stroke-opacity', opacity);
+                path.classList.add(cls);
+                svg.appendChild(path);
+            };
+
+            // Ambient slow sine, subtle, sits behind everything
+            addPath(buildSinePath(16, V, Math.PI / 2, 82, 6), '#6366f1', 0.30, 'nav-wave-ambient');
+
+            // Heart-rate ECG trace - one visible "beat" per V/2, so 4 beats fill the screen
+            addPath(buildEcgPath(V / 2, 22, 42), '#ef4444', 0.85, 'nav-wave-heart');
+
+            // 50Hz signal line - 50 tight cycles across the viewBox width, small amplitude
+            addPath(buildSinePath(6, V / 50, 0, 18), '#f59e0b', 0.55, 'nav-wave-50hz');
+
+            // Small labels identifying the two signal lines
+            const label1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label1.setAttribute('x', '6'); label1.setAttribute('y', '46');
+            label1.setAttribute('font-size', '9'); label1.setAttribute('font-weight', '800');
+            label1.setAttribute('fill', '#ef4444'); label1.setAttribute('fill-opacity', '0.6');
+            label1.textContent = '♥ BPM';
+            svg.appendChild(label1);
+
+            const label2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label2.setAttribute('x', '6'); label2.setAttribute('y', '16');
+            label2.setAttribute('font-size', '9'); label2.setAttribute('font-weight', '800');
+            label2.setAttribute('fill', '#f59e0b'); label2.setAttribute('fill-opacity', '0.7');
+            label2.textContent = '50Hz';
+            svg.appendChild(label2);
+        })();
+
+        // 1. HELPER: EXTRACT YOUTUBE ID (URL-based, handles watch/shorts/live/embed/youtu.be/m.youtube.com)
+        const getYTId = (url) => {
+            if (!url) return null;
+            try {
+                const u = new URL(url.trim());
+                const host = u.hostname.replace(/^www\.|^m\.|^music\./, '');
+                if (host === 'youtu.be') {
+                    const id = u.pathname.split('/').filter(Boolean)[0];
+                    return id && id.length === 11 ? id : null;
+                }
+                if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+                    if (u.searchParams.has('v')) {
+                        const id = u.searchParams.get('v');
+                        return id && id.length === 11 ? id : null;
+                    }
+                    const parts = u.pathname.split('/').filter(Boolean); // e.g. ['shorts','ID'] or ['embed','ID'] or ['live','ID']
+                    if (['shorts', 'embed', 'live', 'v'].includes(parts[0]) && parts[1]) {
+                        const id = parts[1];
+                        return id && id.length === 11 ? id : null;
+                    }
+                }
+            } catch (e) { /* not a valid absolute URL */ }
+            return null;
+        };
+
+        // 2. ADMIN CORE
+        window.toggle = (id) => document.getElementById(id).classList.toggle('hidden');
+        window.updateForm = (val) => {
+            document.getElementById('autoThumbBox').classList.toggle('hidden', val === 'video');
+            document.getElementById('htmlPasteBox').classList.toggle('hidden', val !== 'sim');
+        };
+        window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); window.toggle('loginModal'); } catch (e) { alert("Error logging in"); } };
+        window.logout = () => signOut(auth);
+        window.delItem = async (col, id) => { if(confirm("Confirm Delete?")) { try { await deleteDoc(doc(db, col, id)); } catch (e) { alert("Error"); } } };
+
+        // 3. SLIDER ENGINE
+        onSnapshot(query(collection(db, "slideshow"), orderBy("createdAt", "desc")), (snap) => {
+            const slider = document.getElementById('slider'); const list = document.getElementById('photoList');
+            const data = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            if(data.length > 0) {
+                slider.innerHTML = data.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
+                list.innerHTML = '';
+                data.forEach(s => {
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center gap-4 bg-slate-50 p-2 rounded-xl border';
+                    const img = document.createElement('img');
+                    img.src = s.url; img.className = 'w-16 h-10 object-cover';
+                    const btn = document.createElement('button');
+                    btn.className = 'ml-auto text-red-500 font-bold text-xs'; btn.innerText = 'Remove';
+                    btn.addEventListener('click', () => window.delItem('slideshow', s.id));
+                    row.append(img, btn); list.appendChild(row);
+                });
+                let cur = 0; setInterval(() => { const els = document.querySelectorAll('.slide'); if(els.length < 2) return; els[cur].classList.remove('active'); cur = (cur+1)%els.length; els[cur].classList.add('active'); }, 6000);
+            }
+        });
+
+        window.savePhoto = () => {
+            const file = document.getElementById('fileInp').files[0]; if(!file) return alert("Select photo");
+            const btn = document.getElementById('upBtn'); btn.innerText = "Processing...";
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                const img = new Image(); img.src = e.target.result;
+                img.onload = async () => {
+                    const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d');
+                    cvs.width = 1600; cvs.height = img.height * (1600 / img.width); ctx.drawImage(img, 0,0,1600,cvs.height);
+                    await addDoc(collection(db, "slideshow"), { url: cvs.toDataURL('image/jpeg', 0.8), createdAt: Date.now() });
+                    btn.innerText = "Upload Slide"; alert("Success!");
+                };
+            };
+        };
+
+        // 4. RESOURCE HUB ENGINE
+        let rawData = []; let currentFilter = 'all';
+        const resourceMap = new Map(); // id -> resource object, used by the click handler below (avoids injecting raw urls/titles into HTML)
+
+        onSnapshot(collection(db, "resources"), (snap) => {
+            rawData = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            resourceMap.clear();
+            rawData.forEach(m => resourceMap.set(m.id, m));
+            window.draw();
+        });
+
+        window.handleSearch = () => window.draw();
+        window.filterType = (t) => { currentFilter = t; document.getElementById('hubTitle').innerText = t==='all'?'Resource Hub':t.toUpperCase(); window.draw(); };
+
+        // Single delegated click handler for the whole grid - reads data-view-id / data-del-id
+        // instead of relying on values baked into inline onclick strings, so special characters
+        // in titles/urls (quotes, &, backticks) can never break the click.
+        document.getElementById('resourceGrid').addEventListener('click', (e) => {
+            const viewEl = e.target.closest('[data-view-id]');
+            if (viewEl) {
+                const m = resourceMap.get(viewEl.getAttribute('data-view-id'));
+                if (m) window.viewContent(m.url, m.type, m.title, m.isRaw);
+                return;
+            }
+            const delEl = e.target.closest('[data-del-id]');
+            if (delEl) { window.delItem('resources', delEl.getAttribute('data-del-id')); }
+        });
+
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+        window.draw = () => {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const grid = document.getElementById('resourceGrid');
+            const isAdm = auth.currentUser ? '' : 'hidden';
+
+            grid.innerHTML = rawData.filter(m => (currentFilter === 'all' || m.type === currentFilter) && (m.title.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q))).map(m => {
+                let thumbHtml = '';
+                if(m.type === 'video') {
+                    const ytId = getYTId(m.url);
+                    const thumbSrc = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
+                    thumbHtml = `<div class="thumb-box" data-view-id="${m.id}">${thumbSrc ? `<img src="${thumbSrc}" class="thumb-img opacity-80">` : `<div class="flex flex-col items-center justify-center text-white"><i class="fas fa-triangle-exclamation text-3xl mb-2"></i><span class="text-[10px] font-bold uppercase">Check link</span></div>`}<div class="absolute inset-0 flex items-center justify-center bg-black/20"><div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center text-indigo-600 shadow-2xl"><i class="fas fa-play ml-1"></i></div></div><span class="absolute top-4 left-6 bg-red-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">Video</span></div>`;
+                } else if(m.type === 'sim') {
+                    thumbHtml = `<div class="thumb-box color-sim" data-view-id="${m.id}"><div class="flex flex-col items-center text-white"><i class="fas fa-flask text-5xl mb-3"></i><span class="font-black text-[10px] tracking-widest uppercase">Start Simulation</span></div><span class="absolute top-4 left-6 bg-purple-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase">Lab</span></div>`;
+                } else {
+                    let color = 'bg-slate-900'; let icon = 'fa-file-alt';
+                    const t = m.title.toLowerCase();
+                    if(t.includes('pdf')) color = 'color-pdf', icon = 'fa-file-pdf';
+                    else if(t.includes('doc') || t.includes('word')) color = 'color-doc', icon = 'fa-file-word';
+                    else if(t.includes('ppt')) color = 'color-ppt', icon = 'fa-file-powerpoint';
+                    thumbHtml = `<div class="thumb-box ${color}" data-view-id="${m.id}">` + (m.thumb ? `<img src="${m.thumb}" class="thumb-img opacity-80">` : `<div class="flex flex-col items-center justify-center text-white"><i class="fas ${icon} text-6xl mb-3"></i><span class="font-black text-[10px] uppercase">Class Note</span></div>`) + `<span class="absolute top-4 left-6 bg-slate-900 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase">Material</span></div>`;
+                }
+
+                return `<div class="card-entry h-full">
+                    ${thumbHtml}
+                    <div class="p-8 flex flex-col flex-grow">
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">${esc(m.level)}</span>
+                        <h3 class="text-xl font-extrabold text-slate-900 mb-3 leading-tight">${esc(m.title)}</h3>
+                        <p class="text-sm text-slate-500 mb-10 line-clamp-2">${esc(m.desc)}</p>
+                        <div class="mt-auto flex justify-between items-center pt-6 border-t">
+                            <button data-view-id="${m.id}" class="bg-indigo-600 text-white px-7 py-3 rounded-2xl text-[11px] font-black uppercase shadow-lg shadow-indigo-100 transition hover:scale-105">View Hub</button>
+                            <button data-del-id="${m.id}" class="${isAdm} text-red-300 hover:text-red-500 transition"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        };
+
+        const fileToDataUrl = (file) => new Promise((res, rej) => {
+            const r = new FileReader();
+            r.onload = () => res(r.result);
+            r.onerror = () => rej(new Error('Could not read file'));
+            r.readAsDataURL(file);
+        });
+
+        window.addMaterial = async () => {
+            const btn = document.getElementById('publishBtn'); btn.innerText = "WORKING..."; btn.disabled = true;
+            const type = document.getElementById('resType').value; const title = document.getElementById('resTitle').value;
+            const level = document.getElementById('resLevel').value; const desc = document.getElementById('resDesc').value;
+            const file = document.getElementById('resFile').files[0]; const pastedHtml = document.getElementById('resHtmlContent').value;
+            let url = document.getElementById('resUrl').value; let thumbData = null; let isRaw = false;
+
+            if (!title.trim()) { alert('Title is required'); btn.innerText = "PUBLISH"; btn.disabled = false; return; }
+
+            try {
+                if (type === 'sim' && pastedHtml.trim() !== "") { url = pastedHtml; isRaw = true; }
+
+                if (file) {
+                    if (file.name.endsWith('.html')) {
+                        url = await new Promise((res, rej) => {
+                            const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsText(file);
+                        });
+                        isRaw = true;
+                    } else if (file.type === "application/pdf") {
+                        const buf = await file.arrayBuffer();
+                        const pdf = await pdfjsLib.getDocument({ data: buf.slice(0) }).promise;
+                        const page = await pdf.getPage(1); const vp = page.getViewport({ scale: 1 });
+                        const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); cvs.height = vp.height; cvs.width = vp.width;
+                        await page.render({ canvasContext: ctx, viewport: vp }).promise;
+                        thumbData = cvs.toDataURL('image/jpeg', 0.8);
+                        // Embed the actual PDF so it opens even without a separate link (browsers render PDFs natively).
+                        // An explicit Link field, if provided, still takes priority (e.g. a Drive link you'd rather use).
+                        if (!url.trim()) { url = await fileToDataUrl(file); }
+                    } else if (file.type.startsWith('image/')) {
+                        thumbData = await fileToDataUrl(file);
+                    }
+                }
+
+                if (type === 'note' && !url.trim()) {
+                    alert('This file type can\'t be opened directly in-browser. Please add a Link (e.g. a shared Google Drive / OneDrive view link) so students can open it.');
+                    btn.innerText = "PUBLISH"; btn.disabled = false; return;
+                }
+
+                await addDoc(collection(db, "resources"), { title, type, level, url, desc, thumb: thumbData, isRaw, createdAt: Date.now() });
+                window.toggle('resourceModal');
+            } catch (e) { alert(e.message); }
+            btn.innerText = "PUBLISH MATERIAL"; btn.disabled = false;
+        };
+
+        // Convert a data: URI to a Blob object URL - needed because most browsers block
+        // window.open() navigating directly to a data: URI as a security measure.
+        const dataUrlToBlobUrl = (dataUrl) => {
+            const [meta, b64] = dataUrl.split(',');
+            const mime = meta.match(/data:(.*?);base64/)?.[1] || 'application/octet-stream';
+            const bin = atob(b64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            return URL.createObjectURL(new Blob([bytes], { type: mime }));
+        };
+
+        // ---- VIDEO HUB: built on the official YouTube IFrame Player API instead of a raw
+        // <iframe src="..."> for two reasons:
+        //  1. A plain iframe embed shows a blank/black player with no explanation when a
+        //     video owner has disabled embedding, is region-locked, or was removed - the
+        //     single most common real-world reason a "working" embed looks broken.
+        //     The API's onError event lets us catch that and show a clear fallback instead
+        //     of a dead black box.
+        //  2. It gives a real player object we can reliably start/stop/destroy, so nothing
+        //     keeps playing in the background after the modal is closed.
+        let ytApiReady = false;
+        let ytLoading = false;
+        let ytPlayer = null;
+        let pendingVideo = null;
+
+        window.onYouTubeIframeAPIReady = () => { ytApiReady = true; if (pendingVideo) createYtPlayer(pendingVideo); };
+
+        const loadYtApi = () => {
+            if (ytLoading || ytApiReady) return;
+            ytLoading = true;
+            const tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            document.head.appendChild(tag);
+        };
+
+        const showVideoFallback = (url, msg) => {
+            document.getElementById('ytPlayerMount').classList.add('hidden');
+            const fb = document.getElementById('videoFallback');
+            fb.classList.remove('hidden');
+            document.getElementById('videoFallbackMsg').innerText = msg || "This video can't be played here.";
+            document.getElementById('videoFallbackLink').href = url;
+        };
+
+        const createYtPlayer = (vidId) => {
+            pendingVideo = null;
+            document.getElementById('videoFallback').classList.add('hidden');
+            document.getElementById('ytPlayerMount').classList.remove('hidden');
+            if (ytPlayer) { try { ytPlayer.destroy(); } catch (e) {} ytPlayer = null; }
+            ytPlayer = new YT.Player('ytPlayerMount', {
+                videoId: vidId,
+                playerVars: { autoplay: 1, rel: 0, modestbranding: 1, playsinline: 1 },
+                events: {
+                    onReady: (e) => { try { e.target.playVideo(); } catch (err) {} },
+                    onError: (e) => {
+                        // 2/100/101/150 = invalid id / not found / embedding disabled by owner
+                        const url = `https://www.youtube.com/watch?v=${vidId}`;
+                        const msg = (e.data === 101 || e.data === 150)
+                            ? "The creator has disabled playback of this video on other websites."
+                            : "This video is unavailable or was removed.";
+                        showVideoFallback(url, msg);
+                    }
+                }
+            });
+        };
+
+        window.openVideoHub = (url, title) => {
+            const vidId = getYTId(url);
+            document.getElementById('videoModalTitle').innerText = title;
+            document.getElementById('videoHubModal').classList.remove('hidden');
+            if (!vidId) { showVideoFallback(url || '#', "This doesn't look like a valid YouTube link."); return; }
+            document.getElementById('videoFallback').classList.add('hidden');
+            document.getElementById('ytPlayerMount').classList.remove('hidden');
+            if (window.YT && window.YT.Player) { createYtPlayer(vidId); }
+            else { pendingVideo = vidId; loadYtApi(); }
+        };
+
+        window.closeVideoHub = () => {
+            if (ytPlayer) { try { ytPlayer.stopVideo(); ytPlayer.destroy(); } catch (e) {} ytPlayer = null; }
+            document.getElementById('ytPlayerMount').innerHTML = '';
+            document.getElementById('videoHubModal').classList.add('hidden');
+        };
+        window.handleVideoOutsideClick = (e) => { if (e.target.id === 'videoHubModal') window.closeVideoHub(); };
+
+        // 5. VIEW CONTENT
+        // Videos always open inside the site's own Video Hub player. PDFs/DOCX/PPT open at their
+        // original location (an external link, or the uploaded file itself) in a new browser tab.
+        window.viewContent = (url, type, title, isRaw) => {
+            if (type === 'video') { window.openVideoHub(url, title); return; }
+
+            if (type === 'note') {
+                if (!url) { alert("No file or link found for this item."); return; }
+                const target = url.startsWith('data:') ? dataUrlToBlobUrl(url) : url;
+                window.open(target, '_blank', 'noopener,noreferrer');
+                return;
+            }
+
+            // Simulations (pasted/raw HTML) have no external "original site", so they still
+            // open inside the hub's own viewer.
+            const frame = document.getElementById('cFrame');
+            frame.src = ""; frame.srcdoc = "";
+            if (isRaw === true) { frame.srcdoc = url; } else { frame.src = url; }
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('contentModal').classList.remove('hidden');
+        };
+
+        window.closeContent = () => { document.getElementById('cFrame').src = ""; document.getElementById('cFrame').srcdoc = ""; document.getElementById('contentModal').classList.add('hidden'); };
+        window.handleOutsideClick = (e) => { if(e.target.id === 'contentModal') window.closeContent(); };
+
+        // NAV TRANSITION
+        let lastY = window.scrollY;
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > lastY && window.scrollY > 200) nav.classList.add('nav-hidden');
+            else nav.classList.remove('nav-hidden');
+            lastY = window.scrollY;
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            const isAdm = !!user; document.getElementById('loginBtn').classList.toggle('hidden', isAdm);
+            document.getElementById('adminPanel').classList.toggle('hidden', !isAdm);
+            document.getElementById('addResBtn').classList.toggle('hidden', !isAdm); window.draw();
+        });
+    </script>
+</body>
+</html>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
