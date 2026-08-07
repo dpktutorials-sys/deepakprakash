@@ -9,109 +9,120 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; overflow-x: hidden; }
-        .brand-font { font-family: 'Orbitron', sans-serif; letter-spacing: -1px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        
+        /* BRANDING STYLE */
+        .brand-font { font-family: 'Orbitron', sans-serif; }
         .dpk-red { color: #FF0000; }
         .tut-blue { color: #0000FF; }
-        .subtitle-green { color: #4ade80; font-size: 8px; font-weight: 800; letter-spacing: 2px; }
+        .subtitle-green { color: #22c55e; font-size: 9px; font-weight: 800; letter-spacing: 1px; }
+
+        /* NAV LOGIC */
         .glass-nav { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); transition: transform 0.4s; position: fixed; top: 0; width: 100%; z-index: 100; }
         .nav-hidden { transform: translateY(-100%); }
-        .slider-wrap { position: relative; width: 100%; height: 45vh; overflow: hidden; background: #0f172a; margin-top: 80px; }
-        @media (min-width: 1024px) { .slider-wrap { height: 70vh; margin-top: 88px; } }
-        .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s ease-in-out; }
+        
+        /* SLIDER */
+        .slider-wrap { position: relative; width: 100%; height: 50vh; overflow: hidden; background: #0f172a; margin-top: 80px; }
+        @media (min-width: 1024px) { .slider-wrap { height: 75vh; } }
+        .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s; }
         .slide.active { opacity: 1; }
-        .card-entry { animation: cardSlideUp 0.6s ease-out forwards; opacity: 0; }
-        @keyframes cardSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .thumb-wrap { position: relative; aspect-ratio: 16/9; overflow: hidden; border-radius: 2rem 2rem 0 0; background: #f1f5f9; }
+        
+        /* DOCUMENT COLORS */
+        .file-red { background: #ef4444; } /* PDF */
+        .file-yellow { background: #facc15; } /* Word */
+        .file-green { background: #22c55e; } /* PPT */
+        .file-purple { background: #a855f7; } /* Simulation */
+        .file-indigo { background: #6366f1; } /* General */
+
+        .card-entry { transition: all 0.3s; border-radius: 20px; overflow: hidden; background: white; border: 1px solid #e2e8f0; }
+        .card-entry:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        
+        .thumb-box { position: relative; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .thumb-img { width: 100%; height: 100%; object-fit: cover; }
-        .note-cover { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; }
-        .bg-pdf { background: linear-gradient(135deg, #e52d27, #b31919); } 
-        .bg-doc { background: linear-gradient(135deg, #f7d02c, #d1a600); } 
-        .bg-ppt { background: linear-gradient(135deg, #27ae60, #1e8449); } 
-        .bg-sim { background: linear-gradient(135deg, #8b5cf6, #4c1d95); }
-        .sim-container { width: 95%; height: 90%; background: white; border-radius: 2rem; overflow: hidden; }
     </style>
 </head>
 <body class="bg-[#f8fafc] min-h-screen">
 
-    <!-- NAV -->
-    <nav id="mainNav" class="glass-nav border-b border-slate-100">
-        <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-            <div class="flex flex-col cursor-pointer" onclick="filterType('all')">
-                <div class="flex items-center brand-font text-2xl lg:text-3xl">
-                    <span class="dpk-red">DPK</span> <span class="tut-blue ml-2 uppercase">TUTORIALS</span>
+    <!-- NAVIGATION -->
+    <nav id="mainNav" class="glass-nav border-b">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex flex-col cursor-pointer" onclick="window.location.reload()">
+                <div class="flex items-center brand-font text-2xl">
+                    <span class="dpk-red">DPK</span> <span class="tut-blue ml-2">TUTORIALS</span>
                 </div>
                 <div class="subtitle-green uppercase">Out and Out Educational Site</div>
             </div>
-            <div class="hidden md:flex items-center gap-6 font-bold text-slate-500 text-[10px] uppercase">
-                <button onclick="filterType('all')">Home</button>
-                <button onclick="filterType('video')">Videos</button>
-                <button onclick="filterType('note')">Notes</button>
-                <button onclick="filterType('sim')">Simulations</button>
+            <div class="hidden md:flex items-center gap-6 font-bold text-slate-500 text-[11px] uppercase tracking-widest">
+                <button onclick="window.filterType('all')">Home</button>
+                <button onclick="window.filterType('video')">Videos</button>
+                <button onclick="window.filterType('note')">Notes</button>
+                <button onclick="window.filterType('sim')">Simulations</button>
             </div>
-            <div class="flex gap-3">
-                <button id="loginBtn" onclick="toggle('loginModal')" class="text-[10px] font-bold border px-4 py-2 rounded-full uppercase">Admin</button>
+            <div class="flex items-center gap-3">
+                <button id="loginBtn" onclick="window.toggle('loginModal')" class="text-[10px] font-bold border px-3 py-1.5 rounded-full uppercase">Admin</button>
                 <div id="adminPanel" class="hidden flex gap-2">
-                    <button onclick="toggle('imageModal')" class="bg-indigo-600 text-white text-[10px] px-5 py-2 rounded-full font-bold">SLIDES</button>
-                    <button onclick="logout()" class="text-red-500"><i class="fas fa-power-off"></i></button>
+                    <button onclick="window.toggle('imageModal')" class="bg-indigo-600 text-white text-[10px] px-4 py-2 rounded-full font-bold">SLIDER</button>
+                    <button onclick="window.logout()" class="text-red-500"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- SLIDER -->
-    <div class="slider-wrap"><div id="slider"></div></div>
+    <!-- HERO -->
+    <div class="slider-wrap"><div id="slider" class="w-full h-full"></div></div>
 
     <!-- HUB -->
-    <main class="max-w-7xl mx-auto px-6 py-16">
-        <div class="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
-            <h2 id="hubTitle" class="text-4xl font-black text-slate-900">Resource Hub</h2>
-            <div class="flex gap-4 w-full md:w-auto">
-                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search..." class="bg-white border rounded-2xl px-6 py-3 w-full md:w-64 outline-none">
-                <button id="addResBtn" onclick="toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold">Add</button>
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
+            <h2 id="hubTitle" class="text-3xl font-black text-slate-900">DPK Resource Hub</h2>
+            <div class="flex gap-2 w-full md:w-auto">
+                <input type="text" id="searchInput" oninput="window.handleSearch()" placeholder="Search library..." class="bg-white border rounded-xl px-4 py-2 w-full md:w-64 outline-none focus:border-indigo-500">
+                <button id="addResBtn" onclick="window.toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-6 py-2 rounded-xl font-bold whitespace-nowrap">Add New</button>
             </div>
         </div>
-        <div id="resourceGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+        <div id="resourceGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-[#001b3a] text-white py-16 text-center">
-        <p class="text-xl font-bold">© <span id="year"></span> DPK TUTORIALS</p>
+    <footer class="bg-[#001b3a] text-white py-12 text-center mt-20">
+        <p class="font-bold text-lg">© <span id="year"></span> DPK TUTORIALS. All Rights Reserved.</p>
         <p class="text-slate-400 text-xs mt-2 uppercase tracking-widest">Designed by Deepak Prakash Bhatta</p>
     </footer>
 
-    <!-- CONTENT VIEWER -->
-    <div id="contentModal" onclick="handleOutsideClick(event)" class="fixed inset-0 bg-black/95 z-[300] hidden flex flex-col items-center justify-center p-4">
-        <button onclick="closeContent()" class="absolute top-6 right-6 text-white text-5xl hover:text-red-500">&times;</button>
-        <div id="modalBody" class="sim-container">
+    <!-- VIEWER MODAL -->
+    <div id="contentModal" onclick="window.handleOutsideClick(event)" class="fixed inset-0 bg-black/95 z-[300] hidden flex flex-col items-center justify-center p-4">
+        <button onclick="window.closeContent()" class="absolute top-6 right-6 text-white text-5xl">&times;</button>
+        <div id="modalBody" class="w-full h-[85vh] bg-white rounded-2xl overflow-hidden shadow-2xl">
             <iframe id="cFrame" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
         </div>
+        <h3 id="modalTitle" class="text-white mt-4 font-bold uppercase tracking-widest"></h3>
     </div>
 
-    <!-- MODAL: ADD -->
+    <!-- MODAL: ADD CONTENT -->
     <div id="resourceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4 overflow-y-auto">
-        <div class="bg-white p-8 rounded-[2rem] w-full max-w-md relative">
+        <div class="bg-white p-8 rounded-[2rem] w-full max-w-md my-8 relative">
             <h2 class="text-2xl font-bold mb-6">Publish Content</h2>
             <div class="space-y-4">
-                <input type="text" id="resTitle" placeholder="Title" class="w-full p-4 border rounded-xl outline-none">
+                <input type="text" id="resTitle" placeholder="Title (e.g. Physics.pdf)" class="w-full p-4 border rounded-xl outline-none">
                 <div class="flex gap-2">
-                    <select id="resType" class="border rounded-xl p-4" onchange="updateForm(this.value)">
+                    <select id="resType" class="border rounded-xl p-4 bg-white outline-none" onchange="window.updateForm(this.value)">
                         <option value="video">Video</option>
-                        <option value="note">Note</option>
+                        <option value="note">Note/File</option>
                         <option value="sim">Simulation</option>
                     </select>
-                    <input type="text" id="resLevel" placeholder="Level" class="flex-1 p-4 border rounded-xl">
+                    <input type="text" id="resLevel" placeholder="Level" class="flex-1 p-4 border rounded-xl outline-none">
                 </div>
                 <div id="htmlPasteBox" class="hidden">
                     <textarea id="resHtmlContent" placeholder="Paste HTML code here..." class="w-full p-4 border rounded-xl h-32 text-xs font-mono"></textarea>
                 </div>
-                <div id="autoThumbBox" class="hidden p-4 bg-slate-50 rounded-xl border-2 border-dashed">
-                    <input type="file" id="resFile" accept=".pdf,.html,.htm,image/*" class="text-xs">
+                <div id="autoThumbBox" class="hidden p-4 bg-indigo-50 rounded-xl border-2 border-dashed border-indigo-200 text-center">
+                    <label class="text-[10px] font-bold text-indigo-500 uppercase">Upload PDF for Auto-Thumb</label>
+                    <input type="file" id="resFile" accept=".pdf,.html,image/*" class="text-xs mt-2 w-full">
                 </div>
-                <input type="text" id="resUrl" placeholder="URL (YouTube/Drive)" class="w-full p-4 border rounded-xl">
-                <textarea id="resDesc" placeholder="Description" class="w-full p-4 border rounded-xl h-20"></textarea>
-                <button onclick="addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold">PUBLISH</button>
-                <button onclick="toggle('resourceModal')" class="w-full text-slate-400 text-sm">Cancel</button>
+                <input type="text" id="resUrl" placeholder="URL (YouTube Link or Drive Link)" class="w-full p-4 border rounded-xl outline-none">
+                <textarea id="resDesc" placeholder="Brief description..." class="w-full p-4 border rounded-xl h-24 outline-none"></textarea>
+                <button onclick="window.addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold shadow-xl">PUBLISH MATERIAL</button>
+                <button onclick="window.toggle('resourceModal')" class="w-full text-slate-400 mt-2 font-bold text-sm">Cancel</button>
             </div>
         </div>
     </div>
@@ -119,20 +130,20 @@
     <!-- ADMIN MODALS -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[200] p-4">
         <div class="bg-white p-10 rounded-[2rem] w-full max-w-sm">
-            <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+            <h2 class="text-2xl font-bold mb-6 text-center uppercase tracking-tighter">Admin Login</h2>
             <input type="email" id="email" placeholder="Email" class="w-full p-4 border rounded-xl mb-4">
             <input type="password" id="password" placeholder="Password" class="w-full p-4 border rounded-xl mb-6">
-            <button onclick="handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold">Enter</button>
+            <button onclick="window.handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold">Login</button>
         </div>
     </div>
 
     <div id="imageModal" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[200] p-4">
         <div class="bg-white p-8 rounded-[2rem] w-full max-w-lg flex flex-col max-h-[80vh]">
-            <h2 class="text-xl font-bold mb-4">Slider</h2>
-            <input type="file" id="fileInp" accept="image/*" class="mb-4">
-            <button onclick="savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-3 rounded-xl font-bold">Upload</button>
-            <div id="photoList" class="overflow-y-auto mt-4 space-y-2"></div>
-            <button onclick="toggle('imageModal')" class="mt-4 text-slate-400">Close</button>
+            <h2 class="text-xl font-bold mb-4 uppercase">Manage Gallery</h2>
+            <input type="file" id="fileInp" accept="image/*" class="mb-4 text-xs">
+            <button onclick="window.savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg">Upload to Slider</button>
+            <div id="photoList" class="overflow-y-auto mt-6 space-y-3"></div>
+            <button onclick="window.toggle('imageModal')" class="mt-4 text-slate-400 font-bold uppercase text-[10px]">Close Manager</button>
         </div>
     </div>
 
@@ -147,50 +158,84 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         document.getElementById('year').innerText = new Date().getFullYear();
 
+        // 1. GLOBAL ADMIN LOGIC
+        window.toggle = (id) => document.getElementById(id).classList.toggle('hidden');
         window.updateForm = (val) => {
             document.getElementById('autoThumbBox').classList.toggle('hidden', val === 'video');
             document.getElementById('htmlPasteBox').classList.toggle('hidden', val !== 'sim');
         };
+        window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); window.toggle('loginModal'); } catch (e) { alert("Login Error"); } };
+        window.logout = () => signOut(auth);
 
-        // --- GLOBAL DELETE FUNCTION ---
+        // 2. DELETE ENGINE
         window.delItem = async (col, id) => {
-            if(confirm("Are you sure you want to delete this?")) {
-                try {
-                    await deleteDoc(doc(db, col, id));
-                } catch (e) { alert("Error deleting: " + e.message); }
-            }
+            if(confirm("Confirm Delete?")) { try { await deleteDoc(doc(db, col, id)); } catch (e) { alert(e.message); } }
         };
 
-        // --- CONTENT LOADER ---
-        let rawRes = []; let filter = 'all';
-        onSnapshot(collection(db, "resources"), (snap) => { rawRes = snap.docs.map(d => ({id: d.id, ...d.data()})); draw(); });
+        // 3. SLIDER ENGINE
+        onSnapshot(query(collection(db, "slideshow"), orderBy("createdAt", "desc")), (snap) => {
+            const slider = document.getElementById('slider'); const list = document.getElementById('photoList');
+            const data = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            if(data.length > 0) {
+                slider.innerHTML = data.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
+                list.innerHTML = data.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-2 border rounded-xl"><img src="${s.url}" class="w-16 h-10 object-cover rounded shadow-sm"><button onclick="window.delItem('slideshow', '${s.id}')" class="ml-auto text-red-500 font-bold text-xs">Remove</button></div>`).join('');
+                let cur = 0;
+                setInterval(() => { const els = document.querySelectorAll('.slide'); if(els.length < 2) return; els[cur].classList.remove('active'); cur = (cur+1)%els.length; els[cur].classList.add('active'); }, 6000);
+            } else { slider.innerHTML = `<div class="w-full h-full flex items-center justify-center text-slate-300 font-bold uppercase tracking-widest bg-slate-50">Upload Classroom Photos as Admin</div>`; }
+        });
+
+        window.savePhoto = () => {
+            const file = document.getElementById('fileInp').files[0]; if(!file) return alert("Select photo");
+            const btn = document.getElementById('upBtn'); btn.innerText = "WAIT..."; btn.disabled = true;
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                const img = new Image(); img.src = e.target.result;
+                img.onload = async () => {
+                    const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d');
+                    cvs.width = 1600; cvs.height = img.height * (1600 / img.width); ctx.drawImage(img, 0,0,1600,cvs.height);
+                    try { await addDoc(collection(db, "slideshow"), { url: cvs.toDataURL('image/jpeg', 0.8), createdAt: Date.now() }); alert("Done!"); } catch (err) { alert(err.message); }
+                    btn.innerText = "Upload"; btn.disabled = false;
+                };
+            };
+        };
+
+        // 4. RESOURCE ENGINE
+        let rawData = []; let currentFilter = 'all';
+        onSnapshot(collection(db, "resources"), (snap) => { rawData = snap.docs.map(d => ({id: d.id, ...d.data()})); window.draw(); });
+
+        window.filterType = (t) => { currentFilter = t; document.getElementById('hubTitle').innerText = t==='all'?'Resource Hub':t.toUpperCase(); window.draw(); };
+        window.handleSearch = () => window.draw();
 
         window.draw = () => {
             const q = document.getElementById('searchInput').value.toLowerCase();
             const grid = document.getElementById('resourceGrid');
-            const isAdmin = auth.currentUser ? '' : 'hidden';
+            const isAdm = auth.currentUser ? '' : 'hidden';
 
-            grid.innerHTML = rawRes.filter(m => (filter === 'all' || m.type === filter) && m.title.toLowerCase().includes(q)).map(m => {
-                let thumb = '';
+            grid.innerHTML = rawData.filter(m => (currentFilter === 'all' || m.type === currentFilter) && (m.title.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q))).map(m => {
+                let thumbHtml = '';
                 if(m.type === 'video') {
                     const ytId = m.url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1];
-                    thumb = `<div class="thumb-wrap cursor-pointer" onclick="viewContent('${m.url}', 'video', '${m.title}', ${m.isRaw})"><img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" class="thumb-img"><div class="absolute inset-0 flex items-center justify-center bg-black/20"><i class="fas fa-play text-white text-3xl"></i></div></div>`;
+                    thumbHtml = `<div class="thumb-box cursor-pointer" onclick="window.viewContent(\`${m.url}\`, 'video', \`${m.title}\`, ${m.isRaw})"><img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" class="thumb-img"><div class="absolute inset-0 flex items-center justify-center bg-black/20"><i class="fas fa-play text-white text-4xl"></i></div></div>`;
                 } else {
-                    let style = m.type === 'sim' ? 'bg-sim' : 'bg-gen';
+                    let color = 'file-indigo'; let icon = 'fa-file-alt';
                     const t = m.title.toLowerCase();
-                    if(t.includes('pdf')) style = 'bg-pdf'; else if(t.includes('doc')) style = 'bg-doc'; else if(t.includes('ppt')) style = 'bg-ppt';
-                    thumb = `<div class="thumb-wrap">` + (m.thumb ? `<img src="${m.thumb}" class="thumb-img">` : `<div class="note-cover ${style} font-bold uppercase text-xs">Resource</div>`) + `</div>`;
+                    if(t.includes('pdf')) { color = 'file-red'; icon = 'fa-file-pdf'; }
+                    else if(t.includes('doc') || t.includes('word')) { color = 'file-yellow'; icon = 'fa-file-word'; }
+                    else if(t.includes('ppt')) { color = 'file-green'; icon = 'fa-file-powerpoint'; }
+                    else if(m.type === 'sim') { color = 'file-purple'; icon = 'fa-microchip'; }
+                    
+                    thumbHtml = `<div class="thumb-box">` + (m.thumb ? `<img src="${m.thumb}" class="thumb-img">` : `<div class="w-full h-full ${color} flex flex-col items-center justify-center text-white"><i class="fas ${icon} text-5xl mb-2"></i><span class="text-[10px] font-black uppercase tracking-widest">Resource</span></div>`) + `</div>`;
                 }
 
-                return `<div class="card-entry bg-white rounded-[2rem] shadow-lg overflow-hidden flex flex-col h-full border">
-                    ${thumb}
+                return `<div class="card-entry flex flex-col h-full">
+                    ${thumbHtml}
                     <div class="p-6 flex flex-col flex-grow">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">${m.level}</span>
-                        <h3 class="font-bold text-slate-900 mb-2">${m.title}</h3>
+                        <h3 class="font-bold text-slate-900 mb-2 leading-tight">${m.title}</h3>
                         <p class="text-xs text-slate-500 mb-6 line-clamp-2">${m.desc}</p>
-                        <div class="mt-auto flex justify-between items-center">
-                            ${m.type==='note' ? `<a href="${m.url}" target="_blank" class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-[10px] font-bold">Open</a>` : `<button onclick="viewContent(\`${m.url}\`, '${m.type}', '${m.title}', ${m.isRaw})" class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-[10px] font-bold uppercase">Open ${m.type}</button>`}
-                            <button onclick="delItem('resources', '${m.id}')" class="${isAdmin} text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                        <div class="mt-auto flex justify-between items-center pt-4 border-t">
+                            <button onclick="window.viewContent(\`${m.url}\`, '${m.type}', \`${m.title}\`, ${m.isRaw})" class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-[10px] font-bold uppercase shadow-lg shadow-indigo-100">Open ${m.type}</button>
+                            <button onclick="window.delItem('resources', '${m.id}')" class="${isAdm} text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 </div>`;
@@ -207,61 +252,47 @@
             if (type === 'sim' && pastedHtml.trim() !== "") { url = pastedHtml; isRaw = true; }
             if (file) {
                 const reader = new FileReader();
-                const data = await new Promise((res) => { reader.onload = () => res(reader.result); if (file.name.endsWith('.html')) reader.readAsText(file); else reader.readAsArrayBuffer(file); });
-                if (file.name.endsWith('.html')) { url = data; isRaw = true; }
-                else if (file.type === "application/pdf") {
-                    const pdf = await pdfjsLib.getDocument({ data }).promise;
+                const result = await new Promise((res) => { reader.onload = () => res(reader.result); if(file.name.endsWith('.html')) reader.readAsText(file); else reader.readAsArrayBuffer(file); });
+                if(file.name.endsWith('.html')) { url = result; isRaw = true; }
+                else if(file.type === "application/pdf") {
+                    const pdf = await pdfjsLib.getDocument({ data: result }).promise;
                     const page = await pdf.getPage(1); const vp = page.getViewport({ scale: 1 });
-                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); canvas.height = vp.height; canvas.width = vp.width;
-                    await page.render({ canvasContext: ctx, viewport: vp }).promise; thumbData = canvas.toDataURL('image/jpeg', 0.8);
+                    const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); cvs.height = vp.height; cvs.width = vp.width;
+                    await page.render({ canvasContext: ctx, viewport: vp }).promise; thumbData = cvs.toDataURL('image/jpeg', 0.8);
                 }
             }
-            await addDoc(collection(db, "resources"), { title, type, level, url, desc, thumb: thumbData, isRaw });
-            toggle('resourceModal'); btn.innerText = "PUBLISH"; btn.disabled = false;
+            try { await addDoc(collection(db, "resources"), { title, type, level, url, desc, thumb: thumbData, isRaw }); window.toggle('resourceModal'); } catch (e) { alert(e.message); }
+            btn.innerText = "PUBLISH MATERIAL"; btn.disabled = false;
         };
 
         window.viewContent = (url, type, title, isRaw) => {
             const frame = document.getElementById('cFrame');
-            frame.src = ""; frame.srcdoc = ""; // CLEAN FRAME
+            frame.src = ""; frame.srcdoc = "";
             if (isRaw === true) { frame.srcdoc = url; } 
             else if (type === 'video') {
                 const id = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1];
-                frame.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+                frame.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
             } else { frame.src = url; }
+            document.getElementById('modalTitle').innerText = title;
             document.getElementById('contentModal').classList.remove('hidden');
         };
 
         window.closeContent = () => { document.getElementById('cFrame').src = ""; document.getElementById('cFrame').srcdoc = ""; document.getElementById('contentModal').classList.add('hidden'); };
-        window.handleOutsideClick = (e) => { if(e.target.id === 'contentModal') closeContent(); };
-        window.handleSearch = () => draw();
-        window.filterType = (t) => { filter = t; document.getElementById('hubTitle').innerText = t==='all'?'Hub':t.toUpperCase(); draw(); };
-        window.toggle = (id) => document.getElementById(id).classList.toggle('hidden');
-        window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); toggle('loginModal'); } catch (e) { alert("Fail"); } };
-        window.logout = () => signOut(auth);
+        window.handleOutsideClick = (e) => { if(e.target.id === 'contentModal') window.closeContent(); };
 
-        // SLIDER & NAV
-        let lastScroll = window.scrollY;
+        // 5. NAV BEHAVIOR
+        let lastScrollY = window.scrollY;
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('mainNav');
-            if (window.scrollY > lastScroll && window.scrollY > 200) nav.classList.add('nav-hidden');
+            if (window.scrollY > lastScrollY && window.scrollY > 200) nav.classList.add('nav-hidden');
             else nav.classList.remove('nav-hidden');
-            lastScroll = window.scrollY;
-        });
-
-        onSnapshot(query(collection(db, "slideshow"), orderBy("createdAt", "desc")), (snap) => {
-            const slider = document.getElementById('slider'); const list = document.getElementById('photoList');
-            const data = snap.docs.map(d => ({id: d.id, ...d.data()}));
-            if(data.length > 0) {
-                slider.innerHTML = data.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
-                list.innerHTML = data.map(s => `<div class="flex items-center gap-3 p-2 bg-slate-50 rounded-lg"><img src="${s.url}" class="w-10 h-6 object-cover"><button onclick="delItem('slideshow', '${s.id}')" class="ml-auto text-red-400 text-[10px]">Delete</button></div>`).join('');
-                let cur = 0; setInterval(() => { const els = document.querySelectorAll('.slide'); if(els.length < 2) return; els[cur].classList.remove('active'); cur = (cur + 1) % els.length; els[cur].classList.add('active'); }, 6000);
-            }
+            lastScrollY = window.scrollY;
         });
 
         onAuthStateChanged(auth, (user) => {
             const isAdm = !!user; document.getElementById('loginBtn').classList.toggle('hidden', isAdm);
             document.getElementById('adminPanel').classList.toggle('hidden', !isAdm);
-            document.getElementById('addResBtn').classList.toggle('hidden', !isAdm); draw();
+            document.getElementById('addResBtn').classList.toggle('hidden', !isAdm); window.draw();
         });
     </script>
 </body>
