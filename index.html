@@ -20,6 +20,7 @@
         @media (min-width: 1024px) { .slider-wrap { height: 75vh; margin-top: 88px; } }
         .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.5s ease-in-out; }
         .slide.active { opacity: 1; }
+        .slider-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to top, #f8fafc, transparent); z-index: 10; }
         .card-entry { animation: cardSlideUp 0.6s ease-out forwards; opacity: 0; }
         @keyframes cardSlideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .thumb-wrap { position: relative; aspect-ratio: 16/9; overflow: hidden; border-radius: 2rem 2rem 0 0; background: #f1f5f9; }
@@ -27,8 +28,6 @@
         .card-entry:hover .thumb-img { transform: scale(1.1); }
         .note-cover { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 20px; text-align: center; }
         .bg-pdf { background: linear-gradient(135deg, #e52d27, #b31919); } 
-        .bg-doc { background: linear-gradient(135deg, #f7d02c, #d1a600); } 
-        .bg-ppt { background: linear-gradient(135deg, #27ae60, #1e8449); } 
         .bg-sim { background: linear-gradient(135deg, #8b5cf6, #4c1d95); } 
         .bg-gen { background: linear-gradient(135deg, #6366f1, #3730a3); }
         .sim-container { width: 95%; height: 85%; background: white; border-radius: 2rem; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
@@ -47,16 +46,16 @@
                 <div class="subtitle-green uppercase">Out and Out Educational Site</div>
             </div>
             <div class="hidden md:flex items-center gap-8 font-bold text-slate-500 text-[10px] uppercase tracking-widest">
-                <button onclick="filterType('all')" class="hover:text-indigo-600">Home</button>
-                <button onclick="filterType('video')" class="hover:text-indigo-600">Videos</button>
-                <button onclick="filterType('note')" class="hover:text-indigo-600">Notes</button>
+                <button onclick="filterType('all')" class="hover:text-indigo-600 transition">Home</button>
+                <button onclick="filterType('video')" class="hover:text-indigo-600 transition">Videos</button>
+                <button onclick="filterType('note')" class="hover:text-indigo-600 transition">Notes</button>
                 <button onclick="filterType('sim')" class="text-indigo-600 bg-indigo-50 px-4 py-2 rounded-full border border-indigo-100">Simulations / Labs</button>
             </div>
             <div class="flex items-center gap-4">
                 <button id="loginBtn" onclick="toggle('loginModal')" class="text-[10px] font-black text-slate-400 border px-4 py-2 rounded-full uppercase hover:bg-slate-50">Admin</button>
                 <div id="adminPanel" class="hidden flex items-center gap-3">
                     <button onclick="toggle('imageModal')" class="bg-indigo-600 text-white text-[10px] px-5 py-2.5 rounded-full font-black uppercase shadow-lg">Slider</button>
-                    <button onclick="logout()" class="text-red-500 bg-white border p-2 rounded-full shadow-sm"><i class="fas fa-power-off"></i></button>
+                    <button onclick="logout()" class="text-red-500 bg-white border p-2 rounded-full"><i class="fas fa-power-off"></i></button>
                 </div>
             </div>
         </div>
@@ -77,7 +76,7 @@
                     <i class="fas fa-search text-slate-300 mr-4"></i>
                     <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search library..." class="bg-transparent outline-none text-sm w-full font-semibold">
                 </div>
-                <button id="addResBtn" onclick="toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-10 py-4 rounded-3xl font-black shadow-xl hover:scale-105 transition">
+                <button id="addResBtn" onclick="toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-10 py-4 rounded-3xl font-extrabold shadow-2xl hover:scale-105 transition">
                     <i class="fas fa-plus mr-2"></i> Add Content
                 </button>
             </div>
@@ -90,15 +89,16 @@
         <div class="max-w-7xl mx-auto px-10 text-center">
             <div class="text-3xl brand-font uppercase mb-2"><span class="dpk-red">DPK</span> <span class="tut-blue">TUTORIALS</span></div>
             <p class="text-xl font-bold mb-4">© <span id="year"></span> DPK TUTORIALS</p>
-            <p class="text-slate-400 text-sm tracking-[0.3em] uppercase">Designed by Deepak Prakash Bhatta</p>
+            <p class="text-slate-400 text-sm tracking-[0.3em] uppercase text-nowrap">Designed by Deepak Prakash Bhatta</p>
         </div>
     </footer>
 
-    <!-- INTERACTIVE VIEWERS -->
+    <!-- INTERACTIVE CONTENT MODAL -->
     <div id="contentModal" onclick="handleOutsideClick(event)" class="fixed inset-0 bg-black/95 z-[300] hidden flex flex-col items-center justify-center p-4">
         <button onclick="closeContent()" class="absolute top-6 right-6 text-white/50 text-5xl hover:text-red-500 transition z-[310]"><i class="fas fa-times-circle"></i></button>
         <div id="modalBody" class="sim-container">
-            <iframe id="cFrame" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay"></iframe>
+            <!-- Iframe uses srcdoc for raw code and src for links -->
+            <iframe id="cFrame" class="w-full h-full" src="" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
         </div>
         <h3 id="modalTitle" class="text-white mt-4 font-bold text-xl uppercase tracking-widest"></h3>
     </div>
@@ -119,29 +119,28 @@
                     <input type="text" id="resLevel" placeholder="Grade" class="flex-1 p-4 border rounded-2xl bg-slate-50 outline-none">
                 </div>
 
-                <!-- PASTE HTML BOX (Only for simulations) -->
                 <div id="htmlPasteBox" class="hidden">
                     <label class="block text-[10px] font-black text-indigo-500 mb-1 uppercase">Paste HTML Code Directly</label>
-                    <textarea id="resHtmlContent" placeholder="<html>... Paste your simulation code here ...</html>" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none h-40 font-mono text-xs"></textarea>
+                    <textarea id="resHtmlContent" placeholder="<html>... Paste your code here ...</html>" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none h-40 font-mono text-xs"></textarea>
                 </div>
 
                 <div id="autoThumbBox" class="hidden p-6 bg-indigo-50 rounded-[2rem] border-2 border-dashed border-indigo-200">
-                    <label class="block text-[10px] font-black text-indigo-500 mb-1 uppercase text-center">Thumbnail / PDF File</label>
+                    <label class="block text-[10px] font-black text-indigo-500 mb-1 uppercase text-center">Thumbnail or File Upload</label>
                     <input type="file" id="resFile" accept=".pdf,.html,.htm,image/*" class="text-xs w-full">
                 </div>
 
-                <input type="text" id="resUrl" placeholder="External URL (Optional if code pasted)" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none">
+                <input type="text" id="resUrl" placeholder="External URL (Link)" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none">
                 <textarea id="resDesc" placeholder="Description..." class="w-full p-4 border rounded-2xl bg-slate-50 outline-none h-24"></textarea>
-                <button onclick="addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black">PUBLISH</button>
+                <button onclick="addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black shadow-xl">PUBLISH</button>
             </div>
         </div>
     </div>
 
-    <!-- ADMIN SYSTEM MODALS (Login & Slider Manager - Preserved IDs) -->
+    <!-- ADMIN SYSTEM MODALS (Login & Slider Manager) -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[200] p-4">
-        <div class="bg-white p-10 rounded-[3rem] w-full max-w-sm"><h2 class="text-2xl font-bold mb-6 text-center">Admin Access</h2><input type="email" id="email" placeholder="Email" class="w-full p-4 bg-slate-50 border rounded-2xl mb-4"><input type="password" id="password" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-2xl mb-8"><button onclick="handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">Login</button></div>
+        <div class="bg-white p-10 rounded-[3rem] w-full max-w-sm"><h2 class="text-2xl font-bold mb-6 text-center">Admin Login</h2><input type="email" id="email" placeholder="Email" class="w-full p-4 bg-slate-50 border rounded-2xl mb-4"><input type="password" id="password" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-2xl mb-8"><button onclick="handleLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">Login</button></div>
     </div>
-    <div id="imageModal" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-8 rounded-[2.5rem] w-full max-w-lg flex flex-col max-h-[85vh]"><h2 class="text-xl font-bold mb-6">Slider Manager</h2><input type="file" id="fileInp" accept="image/*" class="mb-4 text-xs"><button onclick="savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-3 rounded-2xl font-bold shadow-lg">Upload Slide</button><div id="photoList" class="overflow-y-auto mt-6 space-y-3 pr-2"></div><button onclick="toggle('imageModal')" class="text-slate-400 mt-4 text-xs">Close</button></div></div>
+    <div id="imageModal" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-8 rounded-[2.5rem] w-full max-w-lg flex flex-col max-h-[85vh]"><h2 class="text-xl font-bold mb-6 text-slate-900">Slider Manager</h2><input type="file" id="fileInp" accept="image/*" class="mb-4 text-xs"><button onclick="savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-3 rounded-2xl font-bold shadow-lg">Upload Slide</button><div id="photoList" class="overflow-y-auto mt-6 space-y-3 pr-2"></div><button onclick="toggle('imageModal')" class="text-slate-400 mt-4 text-xs">Close</button></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -172,16 +171,16 @@
                 let thumbHtml = '';
                 if(m.type === 'video') {
                     const ytId = m.url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1];
-                    thumbHtml = `<div class="thumb-wrap cursor-pointer" onclick="viewContent('${m.url}', 'video', '${m.title}')"><img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" class="thumb-img"><div class="absolute inset-0 bg-black/20 flex items-center justify-center"><div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center text-indigo-600 shadow-xl"><i class="fas fa-play ml-1"></i></div></div><span class="absolute top-4 left-6 bg-red-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase">Lecture</span></div>`;
+                    thumbHtml = `<div class="thumb-wrap cursor-pointer" onclick="viewContent('${m.url}', 'video', '${m.title}', '${m.isRaw}')"><img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" class="thumb-img"><div class="absolute inset-0 bg-black/20 flex items-center justify-center"><div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center text-indigo-600 shadow-xl"><i class="fas fa-play ml-1"></i></div></div><span class="absolute top-4 left-6 bg-red-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase">Lecture</span></div>`;
                 } else if(m.type === 'sim') {
-                    thumbHtml = `<div class="thumb-wrap cursor-pointer" onclick="viewContent('${m.url}', 'sim', '${m.title}')">` + (m.thumb ? `<img src="${m.thumb}" class="thumb-img">` : `<div class="note-cover bg-sim"><i class="fas fa-flask text-5xl mb-4"></i><span class="text-xs font-bold uppercase tracking-widest">Interactive Lab</span></div>`) + `<div class="absolute inset-0 bg-black/10 flex items-center justify-center"><div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center text-indigo-600"><i class="fas fa-microchip"></i></div></div><span class="absolute top-4 left-6 bg-purple-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase">Lab</span></div>`;
+                    thumbHtml = `<div class="thumb-wrap cursor-pointer" onclick="viewContent(\`${m.url}\`, 'sim', '${m.title}', '${m.isRaw}')">` + (m.thumb ? `<img src="${m.thumb}" class="thumb-img">` : `<div class="note-cover bg-sim"><i class="fas fa-flask text-5xl mb-4"></i><span class="text-xs font-bold uppercase tracking-widest">Interactive Lab</span></div>`) + `<div class="absolute inset-0 bg-black/10 flex items-center justify-center"><div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center text-indigo-600"><i class="fas fa-microchip"></i></div></div><span class="absolute top-4 left-6 bg-purple-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase">Lab</span></div>`;
                 } else {
                     let style = 'bg-gen'; let icon = 'fa-file-alt'; const t = m.title.toLowerCase();
-                    if(t.includes('pdf')) { style = 'bg-pdf'; icon = 'fa-file-pdf'; } else if(t.includes('doc')) { style = 'bg-doc'; icon = 'fa-file-word'; } else if(t.includes('ppt')) { style = 'bg-ppt'; icon = 'fa-file-powerpoint'; }
+                    if(t.includes('pdf')) { style = 'bg-pdf'; icon = 'fa-file-pdf'; }
                     thumbHtml = `<div class="thumb-wrap">` + (m.thumb ? `<img src="${m.thumb}" class="thumb-img">` : `<div class="note-cover ${style}"><i class="fas ${icon} text-5xl mb-4"></i><span class="text-xs font-bold uppercase tracking-widest">Material</span></div>`) + `<span class="absolute top-4 left-6 bg-slate-900 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase">Note</span></div>`;
                 }
 
-                return `<div class="card-entry bg-white rounded-[2.5rem] shadow-xl overflow-hidden hover:shadow-2xl transition group">${thumbHtml}<div class="p-8"><h3 class="text-xl font-extrabold text-slate-900 mb-2 leading-tight">${m.title}</h3><p class="text-slate-400 text-sm mb-6 line-clamp-2">${m.desc}</p><div class="flex justify-between items-center border-t pt-6">${m.type==='note' ? `<a href="${m.url}" target="_blank" class="bg-indigo-600 text-white px-6 py-2 rounded-xl text-xs font-bold shadow-lg">Download</a>` : `<button onclick="viewContent('${m.url}', '${m.type}', '${m.title}')" class="bg-indigo-600 text-white px-6 py-2 rounded-xl text-xs font-bold shadow-lg">Interactive View</button>`}<button onclick="deleteDoc(doc(db, 'resources', '${m.id}'))" class="${isAdmin} text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></div></div></div>`;
+                return `<div class="card-entry bg-white rounded-[2.5rem] shadow-xl overflow-hidden hover:shadow-2xl transition group">${thumbHtml}<div class="p-8"><h3 class="text-xl font-extrabold text-slate-900 mb-2 leading-tight">${m.title}</h3><p class="text-slate-400 text-sm mb-6 line-clamp-2">${m.desc}</p><div class="flex justify-between items-center border-t pt-6">${m.type==='note' ? `<a href="${m.url}" target="_blank" class="bg-indigo-600 text-white px-6 py-2 rounded-xl text-xs font-bold shadow-lg">Download</a>` : `<button onclick="viewContent(\`${m.url}\`, '${m.type}', '${m.title}', '${m.isRaw}')" class="bg-indigo-600 text-white px-6 py-2 rounded-xl text-xs font-bold shadow-lg">Interactive View</button>`}<button onclick="deleteDoc(doc(db, 'resources', '${m.id}'))" class="${isAdmin} text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></div></div></div>`;
             }).join('');
         };
 
@@ -192,16 +191,26 @@
             const file = document.getElementById('resFile').files[0]; const pastedHtml = document.getElementById('resHtmlContent').value;
             let url = document.getElementById('resUrl').value;
             let thumbData = null;
+            let isRaw = false;
 
-            // Handle Direct HTML Paste
+            // Handle Direct HTML Paste (New logic: Store raw string)
             if (type === 'sim' && pastedHtml.trim() !== "") {
-                url = "data:text/html;charset=utf-8," + encodeURIComponent(pastedHtml);
+                url = pastedHtml;
+                isRaw = true;
             }
 
             if (file) {
                 const reader = new FileReader();
-                const fileData = await new Promise((res) => { reader.onload = () => res(reader.result); if (file.name.endsWith('.html')) reader.readAsDataURL(file); else reader.readAsArrayBuffer(file); });
-                if (file.name.endsWith('.html')) { url = fileData; }
+                const fileData = await new Promise((res) => { 
+                    reader.onload = () => res(reader.result); 
+                    if (file.name.endsWith('.html')) reader.readAsText(file); // Read raw text for HTML
+                    else reader.readAsArrayBuffer(file); 
+                });
+
+                if (file.name.endsWith('.html')) { 
+                    url = fileData; 
+                    isRaw = true; 
+                }
                 else if (file.type === "application/pdf") {
                     const pdf = await pdfjsLib.getDocument({ data: fileData }).promise;
                     const page = await pdf.getPage(1); const vp = page.getViewport({ scale: 1.0 });
@@ -210,23 +219,30 @@
                 }
             }
 
-            await addDoc(collection(db, "resources"), { title, type, level, url, desc, thumb: thumbData });
+            await addDoc(collection(db, "resources"), { title, type, level, url, desc, thumb: thumbData, isRaw: isRaw });
             toggle('resourceModal'); btn.innerText = "PUBLISH"; btn.disabled = false;
         };
 
-        window.viewContent = (url, type, title) => {
-            let finalUrl = url;
-            if (type === 'video') {
+        window.viewContent = (url, type, title, isRaw) => {
+            const frame = document.getElementById('cFrame');
+            frame.src = ""; frame.srcdoc = ""; // Reset
+
+            if (isRaw === "true" || isRaw === true) {
+                frame.srcdoc = url; // Inject raw HTML
+            } else if (type === 'video') {
                 const id = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1];
-                finalUrl = `https://www.youtube.com/embed/${id}?autoplay=1`;
+                frame.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
                 document.getElementById('modalBody').className = "w-full max-w-5xl aspect-video rounded-3xl overflow-hidden";
-            } else { document.getElementById('modalBody').className = "sim-container"; }
-            document.getElementById('cFrame').src = finalUrl; document.getElementById('modalTitle').innerText = title;
+            } else { 
+                frame.src = url; 
+                document.getElementById('modalBody').className = "sim-container"; 
+            }
+            document.getElementById('modalTitle').innerText = title;
             document.getElementById('contentModal').classList.remove('hidden');
         };
 
         // --- UTILS (Slider, Auth, Nav) ---
-        window.closeContent = () => { document.getElementById('cFrame').src = ""; document.getElementById('contentModal').classList.add('hidden'); };
+        window.closeContent = () => { document.getElementById('cFrame').src = ""; document.getElementById('cFrame').srcdoc = ""; document.getElementById('contentModal').classList.add('hidden'); };
         window.handleOutsideClick = (e) => { if(e.target.id === 'contentModal') closeContent(); };
         window.handleSearch = () => draw();
         window.filterType = (t) => { filter = t; document.getElementById('hubTitle').innerText = t==='all'?'Resource Hub':(t==='video'?'Videos':(t==='sim'?'Labs':'Notes')); draw(); };
@@ -234,28 +250,29 @@
         window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); toggle('loginModal'); } catch (e) { alert("Denied"); } };
         window.logout = () => signOut(auth);
         
-        let slides = []; let curIdx = 0; let timer;
-        onSnapshot(query(collection(db, "slideshow"), orderBy("createdAt", "desc")), (snap) => {
-            slides = snap.docs.map(d => ({id: d.id, ...d.data()})); const slider = document.getElementById('slider'); const list = document.getElementById('photoList');
-            if(slides.length > 0) {
-                slider.innerHTML = slides.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
-                list.innerHTML = slides.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-2 border rounded-xl"><img src="${s.url}" class="w-16 h-10 object-cover rounded shadow-sm"><button onclick="deleteDoc(doc(db, 'slideshow', '${s.id}'))" class="ml-auto text-red-500 text-xs">Delete</button></div>`).join('');
-                if(timer) clearInterval(timer); if(slides.length > 1) timer = setInterval(() => { const els = document.querySelectorAll('.slide'); if(!els[curIdx]) return; els[curIdx].classList.remove('active'); curIdx = (curIdx + 1) % els.length; els[curIdx].classList.add('active'); }, 6000);
-            }
+        let lastScroll = window.scrollY;
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > lastScroll && window.scrollY > 200) nav.classList.add('nav-hidden');
+            else nav.classList.remove('nav-hidden');
+            lastScroll = window.scrollY;
         });
 
-        window.savePhoto = () => {
-            const file = document.getElementById('fileInp').files[0]; if(!file) return alert("Select file");
-            const reader = new FileReader(); reader.readAsDataURL(file);
-            reader.onload = (e) => {
-                const img = new Image(); img.src = e.target.result;
-                img.onload = async () => {
-                    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                    canvas.width = 1600; canvas.height = img.height * (1600 / img.width); ctx.drawImage(img, 0, 0, 1600, canvas.height);
-                    await addDoc(collection(db, "slideshow"), { url: canvas.toDataURL('image/jpeg', 0.8), createdAt: Date.now() }); alert("Done");
-                };
-            };
-        };
+        onSnapshot(query(collection(db, "slideshow"), orderBy("createdAt", "desc")), (snap) => {
+            const slider = document.getElementById('slider');
+            const data = snap.docs.map(d => d.data());
+            if(data.length > 0) {
+                slider.innerHTML = data.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
+                let cur = 0;
+                setInterval(() => {
+                    const els = document.querySelectorAll('.slide');
+                    if(els.length < 2) return;
+                    els[cur].classList.remove('active');
+                    cur = (cur + 1) % els.length;
+                    els[cur].classList.add('active');
+                }, 5000);
+            }
+        });
 
         onAuthStateChanged(auth, (user) => {
             const isAdm = !!user; document.getElementById('loginBtn').classList.toggle('hidden', isAdm);
