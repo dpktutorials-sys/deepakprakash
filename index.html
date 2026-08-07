@@ -100,7 +100,21 @@
         <p class="text-slate-500 text-[10px] mt-2">© <span id="year"></span> All Rights Reserved</p>
     </footer>
 
-    <!-- VIEWER MODAL -->
+    <!-- VIDEO HUB (dedicated player, uses the YouTube IFrame API for reliable playback + error handling) -->
+    <div id="videoHubModal" onclick="window.handleVideoOutsideClick(event)" class="fixed inset-0 bg-black/98 z-[300] hidden flex flex-col items-center justify-center p-4">
+        <button onclick="window.closeVideoHub()" class="absolute top-6 right-6 text-white text-6xl font-thin hover:text-red-500">&times;</button>
+        <div class="w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl relative">
+            <div id="ytPlayerMount" class="w-full h-full"></div>
+            <div id="videoFallback" class="hidden absolute inset-0 flex flex-col items-center justify-center text-white text-center p-8 gap-4 bg-slate-900">
+                <i class="fas fa-triangle-exclamation text-4xl text-amber-400"></i>
+                <p id="videoFallbackMsg" class="font-bold max-w-md">This video can't be played here.</p>
+                <a id="videoFallbackLink" href="#" target="_blank" rel="noopener noreferrer" class="bg-red-600 hover:bg-red-500 transition text-white px-6 py-3 rounded-2xl font-black uppercase text-xs tracking-widest">Watch on YouTube</a>
+            </div>
+        </div>
+        <h3 id="videoModalTitle" class="text-white mt-6 font-bold uppercase tracking-widest text-center"></h3>
+    </div>
+
+    <!-- SIMULATION VIEWER (raw/pasted HTML content only) -->
     <div id="contentModal" onclick="window.handleOutsideClick(event)" class="fixed inset-0 bg-black/98 z-[300] hidden flex flex-col items-center justify-center p-4">
         <button onclick="window.closeContent()" class="absolute top-6 right-6 text-white text-6xl font-thin hover:text-red-500">&times;</button>
         <div id="modalBody" class="w-full h-[85vh] bg-black rounded-3xl overflow-hidden shadow-2xl relative">
@@ -368,20 +382,83 @@
             return URL.createObjectURL(new Blob([bytes], { type: mime }));
         };
 
+        // ---- VIDEO HUB: built on the official YouTube IFrame Player API instead of a raw
+        // <iframe src="..."> for two reasons:
+        //  1. A plain iframe embed shows a blank/black player with no explanation when a
+        //     video owner has disabled embedding, is region-locked, or was removed - the
+        //     single most common real-world reason a "working" embed looks broken.
+        //     The API's onError event lets us catch that and show a clear fallback instead
+        //     of a dead black box.
+        //  2. It gives a real player object we can reliably start/stop/destroy, so nothing
+        //     keeps playing in the background after the modal is closed.
+        let ytApiReady = false;
+        let ytLoading = false;
+        let ytPlayer = null;
+        let pendingVideo = null;
+
+        window.onYouTubeIframeAPIReady = () => { ytApiReady = true; if (pendingVideo) createYtPlayer(pendingVideo); };
+
+        const loadYtApi = () => {
+            if (ytLoading || ytApiReady) return;
+            ytLoading = true;
+            const tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            document.head.appendChild(tag);
+        };
+
+        const showVideoFallback = (url, msg) => {
+            document.getElementById('ytPlayerMount').classList.add('hidden');
+            const fb = document.getElementById('videoFallback');
+            fb.classList.remove('hidden');
+            document.getElementById('videoFallbackMsg').innerText = msg || "This video can't be played here.";
+            document.getElementById('videoFallbackLink').href = url;
+        };
+
+        const createYtPlayer = (vidId) => {
+            pendingVideo = null;
+            document.getElementById('videoFallback').classList.add('hidden');
+            document.getElementById('ytPlayerMount').classList.remove('hidden');
+            if (ytPlayer) { try { ytPlayer.destroy(); } catch (e) {} ytPlayer = null; }
+            ytPlayer = new YT.Player('ytPlayerMount', {
+                videoId: vidId,
+                playerVars: { autoplay: 1, rel: 0, modestbranding: 1, playsinline: 1 },
+                events: {
+                    onReady: (e) => { try { e.target.playVideo(); } catch (err) {} },
+                    onError: (e) => {
+                        // 2/100/101/150 = invalid id / not found / embedding disabled by owner
+                        const url = `https://www.youtube.com/watch?v=${vidId}`;
+                        const msg = (e.data === 101 || e.data === 150)
+                            ? "The creator has disabled playback of this video on other websites."
+                            : "This video is unavailable or was removed.";
+                        showVideoFallback(url, msg);
+                    }
+                }
+            });
+        };
+
+        window.openVideoHub = (url, title) => {
+            const vidId = getYTId(url);
+            document.getElementById('videoModalTitle').innerText = title;
+            document.getElementById('videoHubModal').classList.remove('hidden');
+            if (!vidId) { showVideoFallback(url || '#', "This doesn't look like a valid YouTube link."); return; }
+            document.getElementById('videoFallback').classList.add('hidden');
+            document.getElementById('ytPlayerMount').classList.remove('hidden');
+            if (window.YT && window.YT.Player) { createYtPlayer(vidId); }
+            else { pendingVideo = vidId; loadYtApi(); }
+        };
+
+        window.closeVideoHub = () => {
+            if (ytPlayer) { try { ytPlayer.stopVideo(); ytPlayer.destroy(); } catch (e) {} ytPlayer = null; }
+            document.getElementById('ytPlayerMount').innerHTML = '';
+            document.getElementById('videoHubModal').classList.add('hidden');
+        };
+        window.handleVideoOutsideClick = (e) => { if (e.target.id === 'videoHubModal') window.closeVideoHub(); };
+
         // 5. VIEW CONTENT
-        // Videos always open inside the site's own hub player. PDFs/DOCX/PPT open at their
+        // Videos always open inside the site's own Video Hub player. PDFs/DOCX/PPT open at their
         // original location (an external link, or the uploaded file itself) in a new browser tab.
         window.viewContent = (url, type, title, isRaw) => {
-            if (type === 'video') {
-                const frame = document.getElementById('cFrame');
-                frame.src = ""; frame.srcdoc = "";
-                const vidId = getYTId(url);
-                if (!vidId) { alert("Invalid YouTube Link. Please check the URL."); return; }
-                frame.src = `https://www.youtube.com/embed/${vidId}?autoplay=1&rel=0&modestbranding=1`;
-                document.getElementById('modalTitle').innerText = title;
-                document.getElementById('contentModal').classList.remove('hidden');
-                return;
-            }
+            if (type === 'video') { window.openVideoHub(url, title); return; }
 
             if (type === 'note') {
                 if (!url) { alert("No file or link found for this item."); return; }
