@@ -14,143 +14,130 @@
         .dpk-red { color: #FF0000; } .tut-blue { color: #0000FF; }
         .subtitle-green { color: #22c55e; font-size: 10px; font-weight: 800; letter-spacing: 1px; }
 
-        /* ADVANCED NAVIGATION STYLING */
-        .glass-nav { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: fixed; top: 0; width: 100%; z-index: 100; }
+        /* NAVIGATION */
+        .glass-nav { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px); transition: transform 0.4s ease; position: fixed; top: 0; width: 100%; z-index: 100; }
         .nav-hidden { transform: translateY(-100%); }
         
-        /* Nav Tab Hover Effect */
-        .nav-tab { position: relative; padding: 10px 0; font-size: 15px; color: #64748b; transition: color 0.3s; }
+        .nav-tab { position: relative; padding: 10px 0; font-size: 16px; color: #64748b; transition: 0.3s; font-weight: 700; }
         .nav-tab:hover { color: #4f46e5; }
-        .nav-tab::after { content: ''; position: absolute; width: 0; height: 2.5px; bottom: 0; left: 0; background: #4f46e5; transition: width 0.3s ease; border-radius: 10px; }
-        .nav-tab:hover::after { width: 100%; }
+        .nav-tab::after { content: ''; position: absolute; width: 0; height: 3px; bottom: 0; left: 0; background: #4f46e5; transition: 0.3s; border-radius: 10px; }
+        .nav-tab:hover::after, .nav-tab.active::after { width: 100%; }
         .nav-tab.active { color: #4f46e5; }
-        .nav-tab.active::after { width: 100%; }
 
         /* SLIDER */
-        .slider-wrap { position: relative; width: 100%; height: 45vh; overflow: hidden; background: #0f172a; margin-top: 85px; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.2); }
-        @media (min-width: 1024px) { .slider-wrap { height: 70vh; } }
-        .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s ease-in-out; }
+        .slider-wrap { position: relative; width: 100%; height: 50vh; overflow: hidden; background: #000; margin-top: 85px; }
+        @media (min-width: 1024px) { .slider-wrap { height: 75vh; } }
+        .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 1.5s ease-in-out; }
         .slide.active { opacity: 1; }
         
-        /* CARD EFFECTS */
-        .card-entry { background: white; border-radius: 24px; overflow: hidden; border: 1px solid #eef2f6; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; opacity: 0; transform: translateY(20px); }
+        /* CARD STYLES */
+        .card-entry { background: white; border-radius: 24px; overflow: hidden; border: 1px solid #eef2f6; transition: 0.4s; display: flex; flex-direction: column; opacity: 0; transform: translateY(20px); }
         .card-entry.visible { opacity: 1; transform: translateY(0); }
-        .card-entry:hover { transform: translateY(-10px); box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.12); border-color: #4f46e5; }
+        .card-entry:hover { transform: translateY(-10px); box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.15); border-color: #4f46e5; }
         
-        .thumb-box { position: relative; aspect-ratio: 16/9; overflow: hidden; display: flex; align-items: center; justify-content: center; color: white; background: #000; }
-        .thumb-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
-        .card-entry:hover .thumb-img { transform: scale(1.1); opacity: 0.8; }
+        .thumb-box { position: relative; aspect-ratio: 16/9; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #000; }
+        .thumb-img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s; }
+        .card-entry:hover .thumb-img { transform: scale(1.1); opacity: 0.7; }
         
-        /* BUTTON ANIMATION */
-        .btn-bounce { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .btn-bounce:hover { transform: scale(1.05); }
-        .btn-bounce:active { transform: scale(0.95); }
+        /* DOCUMENT COLORS */
+        .bg-pdf { background: linear-gradient(135deg, #e11d48, #991b1b); }
+        .bg-doc { background: linear-gradient(135deg, #facc15, #a16207); }
+        .bg-ppt { background: linear-gradient(135deg, #22c55e, #166534); }
+        .bg-sim { background: linear-gradient(135deg, #8b5cf6, #4c1d95); }
 
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .btn-action { transition: 0.2s; }
+        .btn-action:hover { transform: scale(1.05); }
     </style>
 </head>
 <body>
 
-    <!-- NAVIGATION BAR -->
-    <nav id="mainNav" class="glass-nav border-b border-slate-100">
+    <!-- NAV BAR -->
+    <nav id="mainNav" class="glass-nav border-b">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <!-- LOGO AREA -->
-            <div class="flex flex-col cursor-pointer transition transform hover:scale-95" onclick="location.reload()">
+            <div class="flex flex-col cursor-pointer" onclick="location.reload()">
                 <div class="flex items-center brand-font text-2xl lg:text-3xl uppercase font-black tracking-tighter">
                     <span class="dpk-red">DPK</span> <span class="tut-blue ml-2">TUTORIALS</span>
                 </div>
                 <div class="subtitle-green uppercase">Out and Out Educational Site</div>
             </div>
 
-            <!-- ENHANCED TABS -->
-            <div class="hidden md:flex items-center gap-10 font-bold uppercase tracking-widest">
+            <div class="hidden md:flex items-center gap-10">
                 <button onclick="window.filterType('all')" class="nav-tab active" id="tab-all">Home</button>
                 <button onclick="window.filterType('video')" class="nav-tab" id="tab-video">Videos</button>
                 <button onclick="window.filterType('note')" class="nav-tab" id="tab-note">Notes</button>
-                <button onclick="window.filterType('sim')" class="nav-tab" id="tab-sim">Simulations</button>
+                <button onclick="window.filterType('sim')" class="nav-tab" id="tab-sim">Labs</button>
             </div>
 
-            <!-- ADMIN AREA -->
-            <div class="flex gap-3 items-center">
-                <button id="loginBtn" onclick="window.toggle('loginModal')" class="text-xs font-black text-slate-400 hover:text-indigo-600 transition uppercase tracking-tighter border-b border-transparent hover:border-indigo-600">Admin</button>
+            <div class="flex gap-4 items-center">
+                <button id="loginBtn" onclick="window.toggle('loginModal')" class="text-xs font-bold text-slate-400 hover:text-indigo-600 transition uppercase tracking-widest">Admin</button>
                 <div id="adminPanel" class="hidden flex gap-3">
-                    <button onclick="window.toggle('imageModal')" class="bg-indigo-600 text-white text-[10px] px-5 py-2.5 rounded-full font-black uppercase shadow-lg shadow-indigo-100 btn-bounce">Manage Slides</button>
+                    <button onclick="window.toggle('imageModal')" class="bg-indigo-600 text-white text-[10px] px-5 py-2.5 rounded-full font-black uppercase shadow-lg shadow-indigo-100">Gallery</button>
                     <button onclick="window.logout()" class="text-red-500 hover:bg-red-50 p-2 rounded-full transition"><i class="fas fa-power-off"></i></button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- FULL WIDTH SLIDER -->
+    <!-- SLIDER -->
     <div class="slider-wrap"><div id="slider" class="w-full h-full"></div></div>
 
-    <!-- MAIN HUB -->
+    <!-- HUB -->
     <main class="max-w-7xl mx-auto px-6 py-20">
         <div class="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
-            <div class="text-center md:text-left">
-                <h2 id="hubTitle" class="text-5xl font-black text-slate-900 tracking-tighter uppercase">Resource Hub</h2>
-                <div class="h-1.5 w-24 bg-indigo-600 rounded-full mt-4 mx-auto md:mx-0 shadow-lg shadow-indigo-100"></div>
-            </div>
+            <h2 id="hubTitle" class="text-5xl font-black text-slate-900 tracking-tighter uppercase">Resource Hub</h2>
             <div class="flex gap-4 w-full md:w-auto">
-                <div class="flex items-center bg-white border border-slate-100 rounded-2xl px-6 py-4 w-full md:w-80 shadow-sm focus-within:shadow-xl focus-within:border-indigo-200 transition-all duration-300">
-                    <i class="fas fa-search text-slate-300 mr-4"></i>
-                    <input type="text" id="searchInput" oninput="window.handleSearch()" placeholder="Search library..." class="bg-transparent outline-none font-semibold text-slate-600 w-full">
-                </div>
-                <button id="addResBtn" onclick="window.toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black whitespace-nowrap shadow-2xl shadow-indigo-200 btn-bounce">Add Content</button>
+                <input type="text" id="searchInput" oninput="window.handleSearch()" placeholder="Search library..." class="bg-white border rounded-2xl px-6 py-4 w-full md:w-80 shadow-sm focus:border-indigo-600 outline-none">
+                <button id="addResBtn" onclick="window.toggle('resourceModal')" class="hidden bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black shadow-xl">Add Content</button>
             </div>
         </div>
         <div id="resourceGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12"></div>
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-[#001b3a] text-white py-24 text-center mt-20 relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-1 bg-indigo-600"></div>
-        <div class="relative z-10">
-            <p class="font-black text-2xl uppercase brand-font tracking-tighter"><span class="dpk-red">DPK</span> <span class="tut-blue">TUTORIALS</span></p>
-            <p class="text-slate-400 text-sm mt-6 tracking-[0.4em] uppercase font-bold">Designed by Deepak Prakash Bhatta</p>
-            <p class="text-slate-500 text-[11px] mt-4 font-bold uppercase tracking-widest">© <span id="year"></span> All Rights Reserved</p>
-        </div>
+    <footer class="bg-[#001b3a] text-white py-20 text-center mt-20">
+        <p class="font-black text-2xl uppercase brand-font tracking-tighter"><span class="dpk-red">DPK</span> <span class="tut-blue">TUTORIALS</span></p>
+        <p class="text-slate-400 text-sm mt-4 uppercase font-bold tracking-widest">Designed by Deepak Prakash Bhatta</p>
+        <p class="text-slate-500 text-[11px] mt-2 font-bold uppercase">© <span id="year"></span> All Rights Reserved</p>
     </footer>
 
-    <!-- CONTENT VIEWER -->
+    <!-- MASTER CONTENT VIEWER (VIDEOS & SIMS) -->
     <div id="contentModal" onclick="window.handleOutsideClick(event)" class="fixed inset-0 bg-slate-900/98 z-[300] hidden flex flex-col items-center justify-center p-4">
-        <button onclick="window.closeContent()" class="absolute top-6 right-6 text-white text-6xl font-thin hover:text-red-500 transition active:scale-90">&times;</button>
-        <div id="modalBody" class="w-full h-[85vh] bg-white rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white/5">
-            <iframe id="cFrame" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+        <button onclick="window.closeContent()" class="absolute top-6 right-6 text-white text-6xl font-thin hover:text-red-500 transition">&times;</button>
+        <div id="modalBody" class="w-full h-[85vh] bg-white rounded-3xl overflow-hidden shadow-2xl">
+            <!-- Frame permissions updated for maximum compatibility -->
+            <iframe id="cFrame" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         </div>
-        <h3 id="modalTitle" class="text-white mt-8 font-black uppercase tracking-widest text-xl"></h3>
+        <h3 id="modalTitle" class="text-white mt-6 font-black uppercase tracking-widest text-xl text-center"></h3>
     </div>
 
     <!-- ADMIN MODALS -->
     <div id="resourceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4 overflow-y-auto">
-        <div class="bg-white p-10 rounded-[3rem] w-full max-w-lg my-8 relative shadow-3xl border border-slate-100">
-            <h2 class="text-3xl font-black mb-8 text-slate-900">Publish Material</h2>
+        <div class="bg-white p-10 rounded-[3rem] w-full max-w-lg my-8 relative shadow-3xl">
+            <h2 class="text-3xl font-black mb-8 text-slate-900">Post Material</h2>
             <div class="space-y-5">
-                <input type="text" id="resTitle" placeholder="Title of File/Video" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none focus:border-indigo-600 transition">
+                <input type="text" id="resTitle" placeholder="Title (e.g. Science Part 1)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
                 <div class="flex gap-4">
-                    <select id="resType" class="border rounded-2xl p-5 bg-white outline-none font-black text-slate-700" onchange="window.updateForm(this.value)">
+                    <select id="resType" class="border rounded-2xl p-5 bg-white outline-none font-bold" onchange="window.updateForm(this.value)">
                         <option value="video">Video</option>
                         <option value="note">Note/File</option>
                         <option value="sim">Simulation</option>
                     </select>
-                    <input type="text" id="resLevel" placeholder="Grade/Level" class="flex-1 p-5 border rounded-2xl bg-slate-50 outline-none">
+                    <input type="text" id="resLevel" placeholder="Grade/Level" class="flex-1 p-5 border rounded-2xl bg-slate-50">
                 </div>
-                <div id="htmlPasteBox" class="hidden">
-                    <textarea id="resHtmlContent" placeholder="Paste HTML code here..." class="w-full p-5 border rounded-2xl bg-slate-50 h-40 text-xs font-mono"></textarea>
+                <div id="htmlPasteBox" class="hidden"><textarea id="resHtmlContent" placeholder="Paste HTML code here..." class="w-full p-5 border rounded-2xl bg-slate-50 h-40 text-xs font-mono"></textarea></div>
+                <div id="autoThumbBox" class="hidden p-6 bg-indigo-50 rounded-3xl border-2 border-dashed border-indigo-200 text-center">
+                    <label class="text-[11px] font-black uppercase text-indigo-600">Auto-Thumbnail Preview (PDF/Image)</label>
+                    <input type="file" id="resFile" accept=".pdf,.html,image/*" class="text-xs mt-3 w-full">
                 </div>
-                <div id="autoThumbBox" class="hidden p-6 bg-indigo-50 rounded-[2rem] border-2 border-dashed border-indigo-200 text-center">
-                    <label class="text-[10px] font-black text-indigo-500 uppercase tracking-tighter">Auto-Thumbnail Upload (PDF/Image)</label>
-                    <input type="file" id="resFile" accept=".pdf,.html,image/*" class="text-xs mt-3 w-full cursor-pointer">
-                </div>
-                <input type="text" id="resUrl" placeholder="External URL (YT/G-Drive)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
-                <textarea id="resDesc" placeholder="Brief info..." class="w-full p-5 border rounded-2xl bg-slate-50 h-24 outline-none"></textarea>
-                <button onclick="window.addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-5 rounded-[2rem] font-black shadow-2xl shadow-indigo-100 btn-bounce">PUBLISH CONTENT</button>
+                <input type="text" id="resUrl" placeholder="Link (YouTube URL or File Link)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
+                <textarea id="resDesc" placeholder="Brief info..." class="w-full p-5 border rounded-2xl bg-slate-50 h-24"></textarea>
+                <button onclick="window.addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-5 rounded-[2rem] font-black shadow-xl">PUBLISH CONTENT</button>
             </div>
         </div>
     </div>
 
-    <div id="loginModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-12 rounded-[3rem] w-full max-w-sm"><h2 class="text-3xl font-black mb-10 text-center uppercase">Admin Access</h2><input type="email" id="email" placeholder="Email" class="w-full p-5 border rounded-3xl mb-4 bg-slate-50"><input type="password" id="password" placeholder="Password" class="w-full p-5 border rounded-3xl mb-8 bg-slate-50"><button onclick="window.handleLogin()" class="w-full bg-indigo-600 text-white py-5 rounded-3xl font-black btn-bounce">Enter Dashboard</button></div></div>
-    <div id="imageModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-10 rounded-[3rem] w-full max-w-lg flex flex-col max-h-[85vh]"><h2 class="text-2xl font-black mb-6 uppercase">Gallery</h2><input type="file" id="fileInp" accept="image/*" class="mb-6 text-xs"><button onclick="window.savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-4 rounded-2xl font-black btn-bounce">Add to Slide</button><div id="photoList" class="overflow-y-auto mt-8 space-y-3"></div><button onclick="window.toggle('imageModal')" class="mt-6 text-slate-400 font-bold uppercase text-[10px]">Close</button></div></div>
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-12 rounded-[3rem] w-full max-w-sm text-center"><h2 class="text-3xl font-black mb-10 uppercase">Login</h2><input type="email" id="email" placeholder="Email" class="w-full p-5 border rounded-3xl mb-4 bg-slate-50 outline-none"><input type="password" id="password" placeholder="Password" class="w-full p-5 border rounded-3xl mb-8 bg-slate-50 outline-none"><button onclick="window.handleLogin()" class="w-full bg-indigo-600 text-white py-5 rounded-3xl font-black shadow-xl">ENTER DASHBOARD</button></div></div>
+    <div id="imageModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-10 rounded-[3rem] w-full max-w-lg flex flex-col max-h-[85vh]"><h2 class="text-2xl font-black mb-6 uppercase">Gallery</h2><input type="file" id="fileInp" accept="image/*" class="mb-6 text-xs"><button onclick="window.savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-4 rounded-2xl font-black">Upload Slide</button><div id="photoList" class="overflow-y-auto mt-8 space-y-3"></div><button onclick="window.toggle('imageModal')" class="mt-6 text-slate-400 font-bold uppercase text-xs">Close</button></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -163,47 +150,56 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         document.getElementById('year').innerText = new Date().getFullYear();
 
-        // --- GLOBAL FUNCTIONS ---
+        // 1. GLOBAL HELPERS
         window.toggle = (id) => document.getElementById(id).classList.toggle('hidden');
         window.updateForm = (val) => {
             document.getElementById('autoThumbBox').classList.toggle('hidden', val === 'video');
             document.getElementById('htmlPasteBox').classList.toggle('hidden', val !== 'sim');
         };
-        window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); window.toggle('loginModal'); } catch (e) { alert("Invalid Credentials"); } };
+        window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); window.toggle('loginModal'); } catch (e) { alert("Failed"); } };
         window.logout = () => signOut(auth);
         window.delItem = async (col, id) => { if(confirm("Confirm Delete?")) { try { await deleteDoc(doc(db, col, id)); } catch (e) { alert("Error"); } } };
 
-        // --- SLIDER ENGINE ---
+        // 2. VIDEO PARSER (ROBUST VERSION)
+        const getEmbedUrl = (url) => {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            if (match && match[2].length === 11) {
+                return `https://www.youtube.com/embed/${match[2]}?autoplay=1&rel=0&modestbranding=1&showinfo=0`;
+            }
+            return url; // Return as-is if not YouTube
+        };
+
+        // 3. SLIDER ENGINE
         onSnapshot(query(collection(db, "slideshow"), orderBy("createdAt", "desc")), (snap) => {
             const slider = document.getElementById('slider'); const list = document.getElementById('photoList');
             const data = snap.docs.map(d => ({id: d.id, ...d.data()}));
             if(data.length > 0) {
                 slider.innerHTML = data.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
-                list.innerHTML = data.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-3 rounded-2xl border"><img src="${s.url}" class="w-16 h-10 object-cover rounded-xl shadow-sm"><button onclick="window.delItem('slideshow', '${s.id}')" class="ml-auto text-red-500 font-bold text-xs">Remove</button></div>`).join('');
+                list.innerHTML = data.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-3 rounded-2xl border"><img src="${s.url}" class="w-16 h-10 object-cover rounded shadow-sm"><button onclick="window.delItem('slideshow', '${s.id}')" class="ml-auto text-red-500 font-bold text-xs">Delete</button></div>`).join('');
                 let cur = 0; setInterval(() => { const els = document.querySelectorAll('.slide'); if(els.length < 2) return; els[cur].classList.remove('active'); cur = (cur+1)%els.length; els[cur].classList.add('active'); }, 6000);
             }
         });
 
         window.savePhoto = () => {
             const file = document.getElementById('fileInp').files[0]; if(!file) return alert("Select photo");
-            const btn = document.getElementById('upBtn'); btn.innerText = "PROCESSING..."; btn.disabled = true;
+            const btn = document.getElementById('upBtn'); btn.innerText = "WAIT..."; btn.disabled = true;
             const reader = new FileReader(); reader.readAsDataURL(file);
             reader.onload = (e) => {
                 const img = new Image(); img.src = e.target.result;
                 img.onload = async () => {
                     const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d');
                     cvs.width = 1600; cvs.height = img.height * (1600 / img.width); ctx.drawImage(img, 0,0,1600,cvs.height);
-                    await addDoc(collection(db, "slideshow"), { url: cvs.toDataURL('image/jpeg', 0.8), createdAt: Date.now() });
+                    try { await addDoc(collection(db, "slideshow"), { url: cvs.toDataURL('image/jpeg', 0.8), createdAt: Date.now() }); alert("Done!"); } catch (err) { alert(err.message); }
                     btn.innerText = "Upload Slide"; btn.disabled = false;
                 };
             };
         };
 
-        // --- HUB ENGINE ---
+        // 4. RESOURCE ENGINE
         let rawData = []; let currentFilter = 'all';
         onSnapshot(collection(db, "resources"), (snap) => { rawData = snap.docs.map(d => ({id: d.id, ...d.data()})); window.draw(); });
 
-        window.handleSearch = () => window.draw();
         window.filterType = (t) => { 
             currentFilter = t; 
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
@@ -211,42 +207,42 @@
             document.getElementById('hubTitle').innerText = t==='all'?'Resource Hub':t.toUpperCase(); 
             window.draw(); 
         };
+        window.handleSearch = () => window.draw();
 
         window.draw = () => {
             const q = document.getElementById('searchInput').value.toLowerCase();
             const grid = document.getElementById('resourceGrid');
             const isAdm = auth.currentUser ? '' : 'hidden';
-
             const filtered = rawData.filter(m => (currentFilter === 'all' || m.type === currentFilter) && (m.title.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q)));
             
             grid.innerHTML = filtered.map((m, idx) => {
                 let color = 'bg-slate-900'; let icon = 'fa-file-alt'; let t = m.title.toLowerCase();
                 if(m.type === 'video') color = 'bg-black', icon = 'fa-play';
-                else if(m.type === 'sim') color = 'bg-indigo-600', icon = 'fa-flask';
-                else if(t.includes('pdf')) color = 'bg-red-500', icon = 'fa-file-pdf';
-                else if(t.includes('doc')) color = 'bg-yellow-400', icon = 'fa-file-word';
-                else if(t.includes('ppt')) color = 'bg-green-500', icon = 'fa-file-powerpoint';
+                else if(m.type === 'sim') color = 'bg-sim', icon = 'fa-flask';
+                else if(t.includes('pdf')) color = 'bg-pdf', icon = 'fa-file-pdf';
+                else if(t.includes('doc')) color = 'bg-doc', icon = 'fa-file-word';
+                else if(t.includes('ppt')) color = 'bg-ppt', icon = 'fa-file-powerpoint';
 
-                const thumb = m.thumb ? `<img src="${m.thumb}" class="thumb-img">` : `<div class="flex flex-col items-center"><i class="fas ${icon} text-6xl mb-3"></i><span class="text-[10px] font-black uppercase tracking-widest">${m.type}</span></div>`;
+                const ytId = m.type === 'video' ? m.url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)?.[1] : null;
+                const thumb = m.thumb ? `<img src="${m.thumb}" class="thumb-img">` : (ytId ? `<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" class="thumb-img opacity-80">` : `<div class="flex flex-col items-center"><i class="fas ${icon} text-6xl mb-3"></i><span class="text-[10px] font-black uppercase">Content</span></div>`);
 
                 return `<div class="card-entry" style="animation-delay: ${idx * 0.1}s">
-                    <div class="thumb-box ${color}">${thumb}<span class="absolute top-4 left-6 bg-white/95 text-black text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter shadow-sm">${m.level}</span></div>
+                    <div class="thumb-box ${color}">${thumb}<span class="absolute top-4 left-6 bg-white text-black text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter">${m.level}</span></div>
                     <div class="p-8 flex flex-col flex-grow">
                         <h3 class="text-xl font-extrabold text-slate-900 mb-3 leading-tight group-hover:text-indigo-600">${m.title}</h3>
                         <p class="text-sm text-slate-500 mb-10 line-clamp-2">${m.desc}</p>
                         <div class="mt-auto flex justify-between items-center">
-                            ${m.type==='note' ? `<button onclick="window.open('${m.url}', '_blank')" class="bg-indigo-600 text-white px-7 py-3 rounded-2xl text-[11px] font-black uppercase btn-bounce shadow-xl shadow-indigo-100">Open Note</button>` : `<button onclick="window.viewContent(\`${m.url}\`, '${m.type}', \`${m.title}\`, ${m.isRaw})" class="bg-indigo-600 text-white px-7 py-3 rounded-2xl text-[11px] font-black uppercase btn-bounce shadow-xl shadow-indigo-100">Play ${m.type==='sim'?'Lab':m.type}</button>`}
-                            <button onclick="window.delItem('resources', '${m.id}')" class="${isAdm} text-red-300 hover:text-red-500 transition"><i class="fas fa-trash"></i></button>
+                            ${m.type==='note' ? `<button onclick="window.open('${m.url}', '_blank')" class="bg-indigo-600 text-white px-7 py-3 rounded-2xl text-[11px] font-black uppercase btn-action shadow-lg">Open Note</button>` : `<button onclick="window.viewContent(\`${m.url}\`, '${m.type}', \`${m.title}\`, ${m.isRaw})" class="bg-indigo-600 text-white px-7 py-3 rounded-2xl text-[11px] font-black uppercase btn-action shadow-lg">View ${m.type==='sim'?'Lab':m.type}</button>`}
+                            <button onclick="window.delItem('resources', '${m.id}')" class="${isAdm} text-red-300 hover:text-red-600 transition"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 </div>`;
             }).join('');
-            
             setTimeout(() => { document.querySelectorAll('.card-entry').forEach(el => el.classList.add('visible')); }, 50);
         };
 
         window.addMaterial = async () => {
-            const btn = document.getElementById('publishBtn'); btn.innerText = "SYNCING..."; btn.disabled = true;
+            const btn = document.getElementById('publishBtn'); btn.innerText = "UPLOADING..."; btn.disabled = true;
             const type = document.getElementById('resType').value; const title = document.getElementById('resTitle').value;
             const level = document.getElementById('resLevel').value; const desc = document.getElementById('resDesc').value;
             const file = document.getElementById('resFile').files[0]; const pastedHtml = document.getElementById('resHtmlContent').value;
@@ -264,8 +260,8 @@
                     await page.render({ canvasContext: ctx, viewport: vp }).promise; thumbData = cvs.toDataURL('image/jpeg', 0.8);
                 }
             }
-            await addDoc(collection(db, "resources"), { title, type, level, url, desc, thumb: thumbData, isRaw, createdAt: Date.now() });
-            window.toggle('resourceModal'); btn.innerText = "PUBLISH CONTENT"; btn.disabled = false;
+            try { await addDoc(collection(db, "resources"), { title, type, level, url, desc, thumb: thumbData, isRaw, createdAt: Date.now() }); window.toggle('resourceModal'); } catch (e) { alert(e.message); }
+            btn.innerText = "PUBLISH CONTENT"; btn.disabled = false;
         };
 
         window.viewContent = (url, type, title, isRaw) => {
@@ -273,10 +269,7 @@
             frame.src = ""; frame.srcdoc = ""; 
             if (isRaw === true || isRaw === "true") { frame.srcdoc = url; } 
             else if (type === 'video') {
-                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-                const match = url.match(regExp);
-                const vidId = (match && match[2].length === 11) ? match[2] : null;
-                frame.src = `https://www.youtube.com/embed/${vidId}?autoplay=1&rel=0`;
+                frame.src = getEmbedUrl(url);
             } else { frame.src = url; }
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('contentModal').classList.remove('hidden');
@@ -285,13 +278,13 @@
         window.closeContent = () => { document.getElementById('cFrame').src = ""; document.getElementById('cFrame').srcdoc = ""; document.getElementById('contentModal').classList.add('hidden'); };
         window.handleOutsideClick = (e) => { if(e.target.id === 'contentModal') window.closeContent(); };
 
-        // NAV LOGIC
-        let lastScrollY = window.scrollY;
+        // 5. AUTO-HIDE NAV
+        let lastY = window.scrollY;
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('mainNav');
-            if (window.scrollY > lastScrollY && window.scrollY > 200) nav.classList.add('nav-hidden');
+            if (window.scrollY > lastY && window.scrollY > 200) nav.classList.add('nav-hidden');
             else nav.classList.remove('nav-hidden');
-            lastScrollY = window.scrollY;
+            lastY = window.scrollY;
         });
 
         onAuthStateChanged(auth, (user) => {
