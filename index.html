@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DPK TUTORIALS - Professional Learning App</title>
+    <title>DPK TUTORIALS - Educational Web App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,8 +14,8 @@
         .dpk-red { color: #FF0000; } .tut-blue { color: #0000FF; }
         .subtitle-green { color: #22c55e; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; }
 
-        /* PREMIUM NAV TABS */
-        .glass-nav { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px); transition: transform 0.4s ease; position: fixed; top: 0; width: 100%; z-index: 100; }
+        /* PREMIUM NAVIGATION */
+        .glass-nav { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px); transition: 0.4s ease; position: fixed; top: 0; width: 100%; z-index: 100; }
         .nav-hidden { transform: translateY(-100%); }
         .nav-tab { position: relative; font-size: 20px; font-weight: 800; color: #64748b; transition: 0.3s; padding: 5px 0; }
         .nav-tab:hover { color: #4f46e5; }
@@ -23,96 +23,129 @@
         .nav-tab:hover::after, .nav-tab.active::after { width: 100%; }
         .nav-tab.active { color: #4f46e5; }
 
-        /* SLIDER */
-        .slider-wrap { position: relative; width: 100%; height: 50vh; overflow: hidden; background: #000; margin-top: 85px; }
-        @media (min-width: 1024px) { .slider-wrap { height: 75vh; } }
-        .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 1.5s; }
-        .slide.active { opacity: 1; }
+        /* APP VIEWS */
+        .page-view { display: none; min-height: 100vh; padding-top: 100px; }
+        .page-view.active { display: block; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CARD DESIGN */
-        .dpk-card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; transition: 0.4s; height: 100%; display: flex; flex-direction: column; }
-        .dpk-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.15); }
+        /* LOGIN PAGE BACKGROUND */
+        .login-bg { background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%); position: relative; overflow: hidden; }
+        .blob { position: absolute; width: 500px; height: 500px; background: rgba(79, 70, 229, 0.1); border-radius: 50%; filter: blur(80px); z-index: 0; }
+
+        /* CARDS */
+        .dpk-card { background: white; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .dpk-card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15); border-color: #4f46e5; }
         .card-media { position: relative; aspect-ratio: 16/9; background: #000; overflow: hidden; }
         .card-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .yt-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 65px; color: #ff0000; cursor: pointer; text-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10; transition: 0.2s; }
-        .dpk-card:hover .yt-play-btn { transform: translate(-50%, -50%) scale(1.15); }
-
+        .yt-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 65px; color: #ff0000; cursor: pointer; text-shadow: 0 0 20px rgba(0,0,0,0.4); z-index: 10; transition: 0.2s; }
+        
+        /* THEME COLORS */
         .bg-pdf { background: #ef4444; } .bg-doc { background: #facc15; } .bg-ppt { background: #22c55e; } .bg-sim { background: #8b5cf6; } .bg-ques { background: #6366f1; }
+        
+        /* SLIDER */
+        .slider-wrap { position: relative; width: 100%; height: 45vh; overflow: hidden; background: #000; border-radius: 0 0 40px 40px; }
+        @media (min-width: 1024px) { .slider-wrap { height: 75vh; } }
+        .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 1.5s ease-in-out; }
+        .slide.active { opacity: 1; }
+
         .btn-bounce { transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .btn-bounce:hover { transform: scale(1.05); }
     </style>
 </head>
-<body>
+<body class="flex flex-col">
 
-    <!-- NAVIGATION -->
+    <!-- UNIVERSAL NAVIGATION -->
     <nav id="mainNav" class="glass-nav border-b">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex flex-col cursor-pointer" onclick="location.reload()">
+            <div class="flex flex-col cursor-pointer" onclick="showPage('hubView')">
                 <div class="flex items-center brand-font text-2xl lg:text-3xl uppercase font-black tracking-tighter">
                     <span class="dpk-red">DPK</span> <span class="tut-blue ml-2">TUTORIALS</span>
                 </div>
                 <div class="subtitle-green uppercase">Out and Out Educational Site</div>
             </div>
 
-            <div class="hidden md:flex items-center gap-10">
-                <button onclick="window.filterType('all')" class="nav-tab active" id="tab-all">Home</button>
-                <button onclick="window.filterType('video')" class="nav-tab" id="tab-video">Videos</button>
-                <button onclick="window.filterType('note')" class="nav-tab" id="tab-note">Notes</button>
-                <button onclick="window.filterType('sim')" class="nav-tab" id="tab-sim">Labs</button>
-                <button onclick="window.filterType('ques')" class="nav-tab" id="tab-ques">Questions</button>
+            <!-- TABS (Visible in Hub View) -->
+            <div id="navTabs" class="hidden md:flex items-center gap-12">
+                <button onclick="filterType('all')" class="nav-tab active" id="tab-all">Home</button>
+                <button onclick="filterType('video')" class="nav-tab" id="tab-video">Videos</button>
+                <button onclick="filterType('note')" class="nav-tab" id="tab-note">Notes</button>
+                <button onclick="filterType('sim')" class="nav-tab" id="tab-sim">Labs</button>
+                <button onclick="filterType('ques')" class="nav-tab" id="tab-ques">Questions</button>
             </div>
 
-            <div class="flex gap-4">
-                <button id="loginBtn" onclick="window.toggle('loginModal')" class="text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-indigo-600 transition">Admin</button>
-                <div id="adminPanel" class="hidden flex gap-3">
-                    <button onclick="window.toggle('imageModal')" class="bg-indigo-600 text-white text-[10px] px-5 py-2.5 rounded-full font-black uppercase shadow-lg">Gallery</button>
-                    <button onclick="window.logout()" class="text-red-500 hover:scale-110 transition p-2"><i class="fas fa-power-off"></i></button>
+            <div class="flex gap-4 items-center">
+                <button id="adminBtn" onclick="showPage('loginView')" class="text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-indigo-600 transition">Admin</button>
+                <div id="adminControls" class="hidden flex gap-3">
+                    <button onclick="toggleModal('imageModal')" class="bg-indigo-600 text-white text-[10px] px-5 py-2.5 rounded-full font-black uppercase shadow-lg shadow-indigo-100 btn-bounce">Slider</button>
+                    <button onclick="logout()" class="text-red-500 hover:scale-110 transition"><i class="fas fa-power-off"></i></button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- HERO SLIDER -->
-    <div class="slider-wrap shadow-2xl"><div id="slider" class="w-full h-full"></div></div>
+    <!-- VIEW 1: MAIN HUB PAGE -->
+    <div id="hubView" class="page-view active">
+        <div class="slider-wrap shadow-2xl mx-auto"><div id="slider" class="w-full h-full"></div></div>
 
-    <!-- MAIN HUB -->
-    <main class="max-w-7xl mx-auto px-6 py-20">
-        <div class="flex flex-col md:flex-row items-center justify-between mb-16 gap-8 text-center md:text-left">
-            <h2 id="hubTitle" class="text-5xl font-black text-slate-900 tracking-tighter uppercase">Resource Hub</h2>
-            <div class="flex gap-4 w-full md:w-auto">
-                <input type="text" id="searchInput" oninput="window.handleSearch()" placeholder="Search library..." class="bg-white border rounded-2xl px-6 py-4 w-full md:w-80 outline-none focus:border-indigo-600 shadow-sm">
-                <div id="addResGroup" class="hidden flex gap-2">
-                    <button onclick="window.toggle('resourceModal')" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black whitespace-nowrap shadow-xl shadow-indigo-100">+ Material</button>
-                    <button onclick="window.toggle('questionModal')" class="bg-indigo-900 text-white px-8 py-4 rounded-2xl font-black whitespace-nowrap shadow-xl shadow-indigo-200">+ Question</button>
+        <main class="max-w-7xl mx-auto px-6 py-20">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
+                <h2 id="hubTitle" class="text-5xl font-black text-slate-900 tracking-tighter uppercase">Resource Hub</h2>
+                <div class="flex gap-4 w-full md:w-auto">
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search library..." class="bg-white border border-slate-200 rounded-2xl px-6 py-4 w-full md:w-80 outline-none focus:border-indigo-600 shadow-sm">
+                    <div id="adminActionButtons" class="hidden flex gap-2">
+                        <button onclick="toggleModal('resourceModal')" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black whitespace-nowrap shadow-xl">+ Content</button>
+                        <button onclick="toggleModal('questionModal')" class="bg-indigo-900 text-white px-8 py-4 rounded-2xl font-black whitespace-nowrap shadow-xl">+ Question</button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="resourceGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"></div>
-    </main>
+            <div id="resourceGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12"></div>
+        </main>
 
-    <footer class="bg-[#001b3a] text-white py-20 text-center relative">
-        <p class="font-black text-2xl uppercase brand-font tracking-tighter mb-4"><span class="dpk-red">DPK</span> <span class="tut-blue">TUTORIALS</span></p>
-        <p class="text-slate-400 text-sm uppercase font-bold tracking-widest">Designed by Deepak Prakash Bhatta</p>
-        <p class="text-slate-500 text-[11px] mt-2 uppercase tracking-widest">© <span id="year"></span> All Rights Reserved</p>
-    </footer>
+        <footer class="bg-[#001b3a] text-white py-20 text-center relative">
+            <p class="font-black text-2xl uppercase brand-font mb-4"><span class="dpk-red">DPK</span> <span class="tut-blue">TUTORIALS</span></p>
+            <p class="text-slate-400 text-sm uppercase font-bold tracking-widest">Designed by Deepak Prakash Bhatta</p>
+            <p class="text-slate-500 text-[11px] mt-2 uppercase">© <span id="year"></span> All Rights Reserved</p>
+        </footer>
+    </div>
 
-    <!-- CONTENT VIEWER MODAL -->
-    <div id="contentModal" onclick="window.handleOutsideClick(event)" class="fixed inset-0 bg-slate-900/98 z-[300] hidden flex flex-col items-center justify-center p-4">
-        <button onclick="window.closeContent()" class="absolute top-6 right-6 text-white text-7xl font-thin hover:text-red-500 transition active:scale-90">&times;</button>
-        <div id="modalBody" class="w-[95%] h-[90vh] bg-white rounded-3xl overflow-hidden shadow-2xl">
-            <iframe id="cFrame" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+    <!-- VIEW 2: INTERACTIVE LOGIN PAGE -->
+    <div id="loginView" class="page-view login-bg flex items-center justify-center">
+        <div class="blob" style="top: -100px; left: -100px;"></div>
+        <div class="blob" style="bottom: -100px; right: -100px;"></div>
+        
+        <div class="relative z-10 w-full max-w-md mx-4">
+            <div class="bg-white/80 backdrop-blur-2xl p-12 rounded-[3rem] shadow-3xl border border-white flex flex-col items-center">
+                <div class="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center text-white text-4xl mb-8 shadow-2xl">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h2 class="text-4xl font-black text-slate-900 mb-2 uppercase tracking-tighter">Admin Portal</h2>
+                <p class="text-slate-500 mb-10 font-medium">Please enter your credentials</p>
+                
+                <div class="w-full space-y-6">
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute top-5 left-5 text-slate-400"></i>
+                        <input type="email" id="loginEmail" placeholder="Email Address" class="w-full pl-14 pr-6 py-5 bg-white border border-slate-100 rounded-3xl outline-none focus:border-indigo-600 shadow-sm transition">
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute top-5 left-5 text-slate-400"></i>
+                        <input type="password" id="loginPass" placeholder="Password" class="w-full pl-14 pr-6 py-5 bg-white border border-slate-100 rounded-3xl outline-none focus:border-indigo-600 shadow-sm transition">
+                    </div>
+                    <button onclick="handleAppLogin()" class="w-full bg-indigo-600 text-white py-5 rounded-3xl font-black text-xl shadow-2xl shadow-indigo-200 btn-bounce tracking-widest">SIGN IN</button>
+                    <button onclick="showPage('hubView')" class="w-full text-slate-400 font-bold uppercase text-xs tracking-widest mt-4">Back to Home</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- MODAL: ADD MATERIAL -->
     <div id="resourceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4 overflow-y-auto">
         <div class="bg-white p-10 rounded-[3rem] w-full max-w-lg my-8 relative shadow-3xl">
-            <button onclick="window.toggle('resourceModal')" class="absolute top-8 right-8 text-slate-300 hover:text-red-500 transition text-3xl"><i class="fas fa-times-circle"></i></button>
-            <h2 class="text-3xl font-black mb-8 text-slate-900">Post Material</h2>
+            <button onclick="toggleModal('resourceModal')" class="absolute top-8 right-8 text-slate-300 text-2xl hover:text-red-500"><i class="fas fa-times-circle"></i></button>
+            <h2 class="text-3xl font-black mb-8">Post Material</h2>
             <div class="space-y-5">
-                <input type="text" id="resTitle" placeholder="Title (e.g. Thermodynamics)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
+                <input type="text" id="resTitle" placeholder="Topic Title" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
                 <div class="flex gap-4">
-                    <select id="resType" class="border rounded-2xl p-5 bg-white outline-none font-bold" onchange="window.updateForm(this.value)">
+                    <select id="resType" class="border rounded-2xl p-5 bg-white font-bold" onchange="updateAddForm(this.value)">
                         <option value="video">Video</option>
                         <option value="note">Note/File</option>
                         <option value="sim">Simulation</option>
@@ -120,46 +153,44 @@
                     <input type="text" id="resLevel" placeholder="Category" class="flex-1 p-5 border rounded-2xl bg-slate-50">
                 </div>
                 <div id="htmlPasteBox" class="hidden"><textarea id="resHtmlContent" placeholder="Paste HTML simulation code here..." class="w-full p-5 border rounded-2xl bg-slate-50 h-40 text-xs font-mono"></textarea></div>
-                <div id="autoThumbBox" class="hidden p-6 bg-indigo-50 rounded-3xl border-2 border-dashed border-indigo-200 text-center">
+                <div id="autoThumbBox" class="hidden p-6 bg-indigo-50 rounded-3xl border-2 border-dashed border-indigo-200">
                     <input type="file" id="resFile" accept=".pdf,.html,image/*" class="text-xs w-full">
                 </div>
-                <input type="text" id="resUrl" placeholder="YouTube or Drive Link" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
-                <textarea id="resDesc" placeholder="Description..." class="w-full p-5 border rounded-2xl bg-slate-50 h-24 outline-none"></textarea>
-                <button onclick="window.addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-5 rounded-[2rem] font-black shadow-xl">PUBLISH CONTENT</button>
+                <input type="text" id="resUrl" placeholder="Link (URL)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
+                <textarea id="resDesc" placeholder="Description..." class="w-full p-5 border rounded-2xl bg-slate-50 h-24"></textarea>
+                <button onclick="addHubMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-5 rounded-[2rem] font-black shadow-xl">PUBLISH</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: ADD QUESTION (FIXED WITH CUT BUTTON) -->
+    <!-- MODAL: ADD QUESTION -->
     <div id="questionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4 overflow-y-auto">
         <div class="bg-white p-10 rounded-[3rem] w-full max-w-lg my-8 relative shadow-3xl">
-            <!-- Cut Button Added Below -->
-            <button onclick="window.toggle('questionModal')" class="absolute top-8 right-8 text-slate-300 hover:text-red-500 transition text-3xl"><i class="fas fa-times-circle"></i></button>
-            
-            <h2 class="text-3xl font-black mb-8 text-slate-900 text-center">Add Question</h2>
+            <button onclick="toggleModal('questionModal')" class="absolute top-8 right-8 text-slate-300 text-2xl hover:text-red-500"><i class="fas fa-times-circle"></i></button>
+            <h2 class="text-3xl font-black mb-8 text-slate-900 text-center uppercase tracking-tighter">Add Question</h2>
             <div class="space-y-4">
-                <input type="text" id="qTitle" placeholder="Topic Name" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none">
-                <select id="qType" class="w-full border rounded-2xl p-4 bg-white font-bold" onchange="window.toggleQForm(this.value)">
+                <input type="text" id="qTitle" placeholder="Level/Subject Name" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
+                <select id="qType" class="w-full border rounded-2xl p-5 bg-white font-bold" onchange="toggleQuestionOptions(this.value)">
                     <option value="mcq">MCQ (Multiple Choice)</option>
                     <option value="short">Short Question</option>
                     <option value="long">Long Question</option>
                 </select>
-                <textarea id="qText" placeholder="Write the question here..." class="w-full p-4 border rounded-2xl bg-slate-50 outline-none h-24"></textarea>
-                <div id="mcqOptions" class="space-y-2">
-                    <input type="text" id="optA" placeholder="Option A" class="w-full p-3 border rounded-xl bg-slate-50">
-                    <input type="text" id="optB" placeholder="Option B" class="w-full p-3 border rounded-xl bg-slate-50">
-                    <input type="text" id="optC" placeholder="Option C" class="w-full p-3 border rounded-xl bg-slate-50">
-                    <input type="text" id="optD" placeholder="Option D" class="w-full p-3 border rounded-xl bg-slate-50">
+                <textarea id="qText" placeholder="Write the question text..." class="w-full p-5 border rounded-2xl bg-slate-50 outline-none h-24"></textarea>
+                <div id="mcqInputs" class="space-y-3">
+                    <div class="flex gap-2"><span class="font-bold py-3">A</span><input type="text" id="optA" class="flex-1 p-3 border rounded-xl"></div>
+                    <div class="flex gap-2"><span class="font-bold py-3">B</span><input type="text" id="optB" class="flex-1 p-3 border rounded-xl"></div>
+                    <div class="flex gap-2"><span class="font-bold py-3">C</span><input type="text" id="optC" class="flex-1 p-3 border rounded-xl"></div>
+                    <div class="flex gap-2"><span class="font-bold py-3">D</span><input type="text" id="optD" class="flex-1 p-3 border rounded-xl"></div>
                 </div>
-                <input type="text" id="qAns" placeholder="Correct Answer" class="w-full p-4 border rounded-2xl bg-indigo-50 border-indigo-100 font-bold outline-none">
-                <button onclick="window.addQuestion()" id="qPublishBtn" class="w-full bg-indigo-900 text-white py-5 rounded-[2rem] font-black shadow-xl">PUBLISH TO BANK</button>
+                <input type="text" id="qAns" placeholder="Final Answer" class="w-full p-5 border rounded-2xl bg-indigo-50 border-indigo-100 font-bold">
+                <button onclick="publishQuestion()" id="qPubBtn" class="w-full bg-indigo-900 text-white py-5 rounded-[2rem] font-black shadow-xl">ADD TO BANK</button>
             </div>
         </div>
     </div>
 
-    <!-- ADMIN SYSTEM -->
-    <div id="loginModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-12 rounded-[3rem] w-full max-w-sm"><button onclick="window.toggle('loginModal')" class="absolute top-8 right-8 text-slate-300 text-2xl hover:text-red-500"><i class="fas fa-times-circle"></i></button><h2 class="text-3xl font-black mb-10 text-center uppercase">Login</h2><input type="email" id="email" placeholder="Email" class="w-full p-5 border rounded-3xl mb-4 bg-slate-50"><input type="password" id="password" placeholder="Password" class="w-full p-5 border rounded-3xl mb-8 bg-slate-50"><button onclick="window.handleLogin()" class="w-full bg-indigo-600 text-white py-5 rounded-3xl font-black shadow-xl">ENTER</button></div></div>
-    <div id="imageModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-10 rounded-[3rem] w-full max-w-lg flex flex-col max-h-[85vh] text-center"><button onclick="window.toggle('imageModal')" class="absolute top-8 right-8 text-slate-300 text-2xl hover:text-red-500"><i class="fas fa-times-circle"></i></button><h2 class="text-2xl font-black mb-6 uppercase">Gallery</h2><input type="file" id="fileInp" accept="image/*" class="mb-6 text-xs w-full"><button onclick="window.savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-4 rounded-2xl font-black">Upload Slide</button><div id="photoList" class="overflow-y-auto mt-8 space-y-3 text-left"></div></div></div>
+    <!-- MODAL: IMAGE MANAGER & LAB VIEW -->
+    <div id="imageModal" class="fixed inset-0 bg-slate-900/70 hidden z-[200] p-4"><div class="bg-white p-10 rounded-[3rem] w-full max-w-lg max-h-[85vh] flex flex-col relative"><button onclick="toggleModal('imageModal')" class="absolute top-8 right-8 text-slate-300 text-2xl hover:text-red-500"><i class="fas fa-times-circle"></i></button><h2 class="text-2xl font-bold mb-6">Gallery</h2><input type="file" id="fileInp" class="mb-4 text-xs"><button onclick="saveSlidePhoto()" id="upBtn" class="bg-indigo-600 text-white py-4 rounded-2xl font-bold">Upload</button><div id="photoList" class="overflow-y-auto mt-8 space-y-3"></div></div></div>
+    <div id="contentModal" onclick="handleOutsideContentClick(event)" class="fixed inset-0 bg-slate-900/98 z-[300] hidden flex flex-col items-center justify-center p-4"><button onclick="closeContentModal()" class="absolute top-6 right-6 text-white text-7xl font-thin hover:text-red-500 transition">&times;</button><div id="modalBody" class="w-[95%] h-[90vh] bg-white rounded-3xl overflow-hidden shadow-2xl"><iframe id="cFrame" class="w-full h-full" frameborder="0" allowfullscreen></iframe></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -172,115 +203,106 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         document.getElementById('year').innerText = new Date().getFullYear();
 
-        // --- GLOBAL ADMIN ---
-        window.toggle = (id) => document.getElementById(id).classList.toggle('hidden');
-        window.updateForm = (val) => { document.getElementById('autoThumbBox').classList.toggle('hidden', val === 'video'); document.getElementById('htmlPasteBox').classList.toggle('hidden', val !== 'sim'); };
-        window.toggleQForm = (val) => { document.getElementById('mcqOptions').classList.toggle('hidden', val !== 'mcq'); };
-        window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); window.toggle('loginModal'); } catch (e) { alert("Failed"); } };
-        window.logout = () => signOut(auth);
-        window.delItem = async (col, id) => { if(confirm("Confirm Delete?")) { await deleteDoc(doc(db, col, id)); } };
-
-        // VIDEO INLINE PLAYER
-        window.playInline = (id, url) => {
-            const container = document.getElementById('media-' + id);
-            const ytMatch = url.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([^"&?\/\s]{11})/);
-            if (ytMatch) {
-                container.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1" frameborder="0" allowfullscreen></iframe>`;
-            }
+        // --- APP VIEW CONTROLLER ---
+        window.showPage = (id) => {
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
         };
 
-        // DATABASE DRAWING
-        let rawRes = []; let rawQues = []; let filter = 'all';
-        onSnapshot(collection(db, "resources"), (snap) => { rawRes = snap.docs.map(d => ({id: d.id, ...d.data()})); window.draw(); });
-        onSnapshot(collection(db, "questions"), (snap) => { rawQues = snap.docs.map(d => ({id: d.id, ...d.data()})); window.draw(); });
+        window.toggleModal = (id) => document.getElementById(id).classList.toggle('hidden');
+        window.updateAddForm = (v) => { document.getElementById('autoThumbBox').classList.toggle('hidden', v === 'video'); document.getElementById('htmlPasteBox').classList.toggle('hidden', v !== 'sim'); };
+        window.toggleQuestionOptions = (v) => { document.getElementById('mcqInputs').classList.toggle('hidden', v !== 'mcq'); };
 
-        window.filterType = (t) => { filter = t; document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); window.draw(); };
-        window.handleSearch = () => window.draw();
+        window.handleAppLogin = async () => {
+            const e = document.getElementById('loginEmail').value; const p = document.getElementById('loginPass').value;
+            try { await signInWithEmailAndPassword(auth, e, p); showPage('hubView'); } catch (err) { alert("Invalid Credentials"); }
+        };
+        window.logout = () => signOut(auth);
 
-        window.draw = () => {
+        // --- CONTENT LOGIC ---
+        let resData = []; let quesData = []; let filter = 'all';
+        onSnapshot(collection(db, "resources"), (snap) => { resData = snap.docs.map(d => ({id: d.id, ...d.data()})); drawHub(); });
+        onSnapshot(collection(db, "questions"), (snap) => { quesData = snap.docs.map(d => ({id: d.id, ...d.data()})); drawHub(); });
+
+        window.filterType = (t) => { filter = t; document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); drawHub(); };
+        window.handleSearch = () => drawHub();
+
+        window.drawHub = () => {
             const q = document.getElementById('searchInput').value.toLowerCase();
             const grid = document.getElementById('resourceGrid');
             const isAdm = auth.currentUser ? '' : 'hidden';
 
             if (filter === 'ques') {
-                grid.innerHTML = rawQues.filter(m => m.title.toLowerCase().includes(q)).map(m => `
-                <div class="dpk-card p-8 relative">
-                    <button onclick="window.delItem('questions', '${m.id}')" class="${isAdm} absolute top-4 right-4 text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
-                    <div class="flex items-center gap-3 mb-6"><span class="bg-indigo-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase">${m.qType}</span><span class="text-slate-400 text-xs font-bold uppercase">${m.title}</span></div>
-                    <p class="text-xl font-extrabold text-slate-800 mb-8">${m.text}</p>
-                    ${m.qType === 'mcq' ? `<div class="grid grid-cols-1 gap-3 mb-8"><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">A) ${m.optA}</div><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">B) ${m.optB}</div><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">C) ${m.optC}</div><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">D) ${m.optD}</div></div>` : ''}
-                    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full bg-slate-100 text-indigo-600 py-3 rounded-xl font-black text-xs uppercase">Show Answer</button>
-                    <div class="hidden mt-4 p-5 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-sm">Correct: ${m.answer}</div>
+                grid.innerHTML = quesData.filter(m => m.title.toLowerCase().includes(q)).map(m => `
+                <div class="dpk-card p-10 relative flex flex-col justify-between">
+                    <button onclick="delItem('questions', '${m.id}')" class="${isAdm} absolute top-4 right-4 text-red-300 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                    <div><span class="bg-indigo-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest mb-4 inline-block">${m.qType}</span>
+                    <p class="text-2xl font-extrabold text-slate-800 leading-tight mb-8">${m.text}</p>
+                    ${m.qType==='mcq' ? `<div class="grid grid-cols-1 gap-3 mb-8"><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">A) ${m.optA}</div><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">B) ${m.optB}</div><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">C) ${m.optC}</div><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">D) ${m.optD}</div></div>` : ''}</div>
+                    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full bg-slate-100 text-indigo-600 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition hover:bg-indigo-50">Reveal Answer</button>
+                    <div class="hidden mt-4 p-6 bg-green-50 border border-green-100 rounded-3xl text-green-700 font-bold text-lg">Answer: ${m.answer}</div>
                 </div>`).join('');
             } else {
-                grid.innerHTML = rawRes.filter(m => (filter === 'all' || m.type === filter) && m.title.toLowerCase().includes(q)).map((m) => {
-                    const isVideo = m.type === 'video';
+                grid.innerHTML = resData.filter(m => (filter === 'all' || m.type === filter) && m.title.toLowerCase().includes(q)).map(m => {
                     const ytMatch = m.url.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([^"&?\/\s]{11})/);
-                    const ytId = isVideo && ytMatch ? ytMatch[1] : null;
+                    const ytId = m.type === 'video' && ytMatch ? ytMatch[1] : null;
                     const thumb = m.thumb || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=600');
-                    
                     let bg = 'bg-slate-900'; let icon = 'fa-file-alt';
                     if(m.type==='sim') { bg='bg-sim'; icon='fa-flask'; }
                     else if(m.title.toLowerCase().includes('pdf')) { bg='bg-pdf'; icon='fa-file-pdf'; }
                     else if(m.title.toLowerCase().includes('doc')) { bg='bg-doc'; icon='fa-file-word'; }
                     else if(m.title.toLowerCase().includes('ppt')) { bg='bg-ppt'; icon='fa-file-powerpoint'; }
 
-                    return `<div class="dpk-card">
-                        <div class="card-media" id="media-${m.id}">
-                            <img src="${thumb}" class="card-img">
-                            <div class="absolute inset-0 bg-black/5 opacity-40"></div>
-                            <button onclick="event.stopPropagation(); window.delItem('resources', '${m.id}')" class="${isAdm} absolute top-3 right-3 w-9 h-9 bg-white text-red-500 rounded-xl shadow-xl flex items-center justify-center z-20 hover:bg-red-50"><i class="fas fa-trash"></i></button>
-                            ${isVideo ? `<div class="yt-play-btn" onclick="window.playInline('${m.id}', '${m.url}')"><i class="fab fa-youtube"></i></div>` : `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${bg} w-16 h-16 rounded-3xl shadow-2xl flex items-center justify-center text-white text-3xl opacity-95 cursor-pointer" onclick="${m.type==='sim' ? `window.viewSim(\`${m.url}\`)` : `window.open('${m.url}', '_blank')`}"><i class="fas ${icon}"></i></div>`}
-                        </div>
-                        <div class="p-8 flex flex-col flex-grow">
-                            <h3 class="text-xl font-extrabold text-slate-800 leading-tight mb-1 uppercase tracking-tight">${m.title}</h3>
-                            <div class="text-indigo-600 text-xs font-black uppercase tracking-wider mb-5">${m.level}</div>
-                            <div class="mt-auto flex justify-between items-center border-t border-slate-50 pt-4 text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-none">Designed by Deepak Prakash Bhatta</div>
-                        </div></div>`;
+                    return `<div class="dpk-card"><div class="card-media" id="media-${m.id}"><img src="${thumb}" class="card-img"><div class="absolute inset-0 bg-black/5 opacity-40"></div>
+                        <button onclick="delItem('resources', '${m.id}')" class="${isAdm} absolute top-3 right-3 w-9 h-9 bg-white text-red-500 rounded-xl shadow-xl flex items-center justify-center z-20"><i class="fas fa-trash"></i></button>
+                        ${m.type === 'video' ? `<div class="yt-play-btn" onclick="playInlineHub('${m.id}', '${m.url}')"><i class="fab fa-youtube"></i></div>` : `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${bg} w-16 h-16 rounded-3xl shadow-2xl flex items-center justify-center text-white text-3xl cursor-pointer" onclick="${m.type==='sim'?`viewSimModal(\`${m.url}\`)`:`window.open('${m.url}', '_blank')`}"><i class="fas ${icon}"></i></div>`}
+                    </div><div class="p-8 flex flex-col flex-grow"><h3 class="text-xl font-extrabold text-slate-800 leading-tight mb-2 uppercase">${m.title}</h3><div class="text-indigo-600 text-xs font-black uppercase tracking-wider">${m.level}</div></div></div>`;
                 }).join('');
             }
         };
 
-        window.addMaterial = async () => {
-            const btn = document.getElementById('publishBtn'); btn.innerText = "WAIT..."; btn.disabled = true;
+        // --- CORE ACTIONS ---
+        window.playInlineHub = (id, url) => { 
+            const ytId = url.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([^"&?\/\s]{11})/)?.[1];
+            document.getElementById('media-'+id).innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" frameborder="0" allowfullscreen></iframe>`; 
+        };
+        window.viewSimModal = (url) => { document.getElementById('cFrame').srcdoc = url; toggleModal('contentModal'); };
+        window.closeContentModal = () => { document.getElementById('cFrame').srcdoc = ""; toggleModal('contentModal'); };
+        window.handleOutsideContentClick = (e) => { if(e.target.id === 'contentModal') closeContentModal(); };
+        window.delItem = async (c, id) => { if(confirm("Confirm Delete?")) await deleteDoc(doc(db, c, id)); };
+
+        window.addHubMaterial = async () => {
             const type = document.getElementById('resType').value; const title = document.getElementById('resTitle').value;
             const level = document.getElementById('resLevel').value; const desc = document.getElementById('resDesc').value;
-            const file = document.getElementById('resFile').files[0]; const pastedHtml = document.getElementById('resHtmlContent').value;
-            let url = document.getElementById('resUrl').value; let thumbData = null; let isRaw = false;
-
-            if (type === 'sim' && pastedHtml.trim() !== "") { url = pastedHtml; isRaw = true; }
+            const file = document.getElementById('resFile').files[0]; const pCode = document.getElementById('resHtmlContent').value;
+            let url = document.getElementById('resUrl').value; let thumb = null; let isRaw = false;
+            if (type === 'sim' && pCode.trim() !== "") { url = pCode; isRaw = true; }
             if (file) {
-                const reader = new FileReader();
-                const resData = await new Promise((r) => { reader.onload = () => r(reader.result); if(file.name.endsWith('.html')) reader.readAsText(file); else reader.readAsArrayBuffer(file); });
-                if(file.name.endsWith('.html')) { url = resData; isRaw = true; }
-                else if(file.type === "application/pdf") {
-                    const pdf = await pdfjsLib.getDocument({ data: resData }).promise;
-                    const page = await pdf.getPage(1); const vp = page.getViewport({ scale: 1 });
-                    const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); cvs.height = vp.height; cvs.width = vp.width;
-                    await page.render({ canvasContext: ctx, viewport: vp }).promise; thumbData = cvs.toDataURL('image/jpeg', 0.8);
-                }
+                const reader = new FileReader(); const res = await new Promise((r) => { reader.onload = () => r(reader.result); if(file.name.endsWith('.html')) reader.readAsText(file); else reader.readAsArrayBuffer(file); });
+                if(file.name.endsWith('.html')) { url = res; isRaw = true; }
+                else if(file.type === "application/pdf") { const pdf = await pdfjsLib.getDocument({ data: res }).promise; const page = await pdf.getPage(1); const vp = page.getViewport({ scale: 1 }); const cvs = document.createElement('canvas'); const ctx = cvs.getContext('2d'); cvs.height = vp.height; cvs.width = vp.width; await page.render({ canvasContext: ctx, viewport: vp }).promise; thumb = cvs.toDataURL('image/jpeg', 0.8); }
             }
-            await addDoc(collection(db, "resources"), { title, type, level, url, desc, thumb: thumbData, isRaw, createdAt: Date.now() });
-            window.toggle('resourceModal'); btn.innerText = "PUBLISH"; btn.disabled = false;
+            await addDoc(collection(db, "resources"), { title, type, level, url, desc, thumb, isRaw, createdAt: Date.now() }); toggleModal('resourceModal');
         };
 
-        window.addQuestion = async () => {
+        window.publishQuestion = async () => {
             const data = { title: document.getElementById('qTitle').value, qType: document.getElementById('qType').value, text: document.getElementById('qText').value, answer: document.getElementById('qAns').value, optA: document.getElementById('optA').value, optB: document.getElementById('optB').value, optC: document.getElementById('optC').value, optD: document.getElementById('optD').value, createdAt: Date.now() };
-            await addDoc(collection(db, "questions"), data);
-            window.toggle('questionModal');
+            await addDoc(collection(db, "questions"), data); toggleModal('questionModal');
         };
 
+        // --- SLIDER ENGINE ---
         onSnapshot(query(collection(db, "slideshow"), orderBy("createdAt", "desc")), (snap) => {
             const slider = document.getElementById('slider'); const list = document.getElementById('photoList');
             const data = snap.docs.map(d => ({id: d.id, ...d.data()}));
             if(data.length > 0) {
                 slider.innerHTML = data.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
-                list.innerHTML = data.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-2 rounded-xl border"><img src="${s.url}" class="w-16 h-10 object-cover rounded"><button onclick="window.delItem('slideshow', '${s.id}')" class="ml-auto text-red-500 font-bold text-xs">Remove</button></div>`).join('');
+                list.innerHTML = data.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-2 border rounded-xl"><img src="${s.url}" class="w-16 h-10 object-cover rounded shadow-sm"><button onclick="delItem('slideshow', '${s.id}')" class="ml-auto text-red-500 font-bold text-xs">Remove</button></div>`).join('');
                 let cur = 0; setInterval(() => { const els = document.querySelectorAll('.slide'); if(els.length < 2) return; els[cur].classList.remove('active'); cur = (cur+1)%els.length; els[cur].classList.add('active'); }, 6000);
             }
         });
 
-        window.savePhoto = () => {
+        window.saveSlidePhoto = () => {
             const file = document.getElementById('fileInp').files[0]; if(!file) return alert("Select photo");
             const reader = new FileReader(); reader.readAsDataURL(file);
             reader.onload = (e) => {
@@ -293,10 +315,7 @@
             };
         };
 
-        window.viewSim = (url) => { document.getElementById('cFrame').srcdoc = url; window.toggle('contentModal'); };
-        window.closeContent = () => { document.getElementById('cFrame').srcdoc = ""; window.toggle('contentModal'); };
-        window.handleOutsideClick = (e) => { if(e.target.id === 'contentModal') window.closeContent(); };
-
+        // --- SYSTEM EVENTS ---
         let lastY = window.scrollY;
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('mainNav');
@@ -306,9 +325,12 @@
         });
 
         onAuthStateChanged(auth, (user) => {
-            const isAdm = !!user; document.getElementById('loginBtn').classList.toggle('hidden', isAdm);
-            document.getElementById('adminPanel').classList.toggle('hidden', !isAdm);
-            document.getElementById('addResGroup').classList.toggle('hidden', !isAdm); window.draw();
+            const isAdm = !!user; 
+            document.getElementById('adminBtn').classList.toggle('hidden', isAdm);
+            document.getElementById('adminControls').classList.toggle('hidden', !isAdm);
+            document.getElementById('adminActionButtons').classList.toggle('hidden', !isAdm);
+            if(isAdm) showPage('hubView'); // Auto redirect to hub on login
+            drawHub();
         });
     </script>
 </body>
