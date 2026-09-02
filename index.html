@@ -29,19 +29,19 @@
         .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 1.5s; }
         .slide.active { opacity: 1; }
 
-        /* CARD DESIGN */
+        /* DPK CARD DESIGN */
         .dpk-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); height: 100%; display: flex; flex-direction: column; }
         .dpk-card:hover { transform: translateY(-10px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); border-color: #4f46e5; }
         
         .card-img-wrap { position: relative; aspect-ratio: 16/9; background: #000; overflow: hidden; }
         .card-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .dpk-card:hover .card-img { opacity: 0.7; transform: scale(1.05); }
+        .dpk-card:hover .card-img { opacity: 0.6; transform: scale(1.05); }
         
-        /* PLAY BUTTON ONLY FOR VIDEO */
-        .yt-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 65px; color: #ff0000; text-shadow: 0 0 20px rgba(0,0,0,0.4); pointer-events: none; transition: 0.3s; }
-        .dpk-card:hover .yt-play-btn { transform: translate(-50%, -50%) scale(1.2); }
+        /* PLAY BUTTON STYLING (EXACTLY AS FIGURE) */
+        .yt-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 65px; color: #ff0000; text-shadow: 0 0 20px rgba(0,0,0,0.4); pointer-events: none; transition: 0.3s; z-index: 5; }
+        .dpk-card:hover .yt-play-btn { transform: translate(-50%, -50%) scale(1.15); color: #ff3333; }
 
-        /* FILE TYPE COLORS */
+        /* RESOURCE ICONS FOR NON-VIDEO */
         .bg-pdf { background: #ef4444; } .bg-doc { background: #facc15; } .bg-ppt { background: #22c55e; } .bg-sim { background: #8b5cf6; }
 
         .btn-bounce { transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -77,8 +77,10 @@
         </div>
     </nav>
 
+    <!-- FULL SLIDER -->
     <div class="slider-wrap shadow-2xl"><div id="slider" class="w-full h-full"></div></div>
 
+    <!-- MAIN HUB -->
     <main class="max-w-7xl mx-auto px-6 py-20">
         <div class="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
             <h2 id="hubTitle" class="text-5xl font-black text-slate-900 tracking-tighter uppercase">Resource Hub</h2>
@@ -97,41 +99,42 @@
         <p class="text-slate-500 text-[11px] mt-2 uppercase tracking-widest">© <span id="year"></span> All Rights Reserved</p>
     </footer>
 
-    <!-- SIMULATION MODAL -->
+    <!-- MASTER PLAYER MODAL -->
     <div id="contentModal" onclick="window.handleOutsideClick(event)" class="fixed inset-0 bg-slate-900/98 z-[300] hidden flex flex-col items-center justify-center p-4">
-        <button onclick="window.closeContent()" class="absolute top-6 right-6 text-white text-7xl font-thin hover:text-red-500 transition">&times;</button>
-        <div id="modalBody" class="w-[95%] h-[90vh] bg-white rounded-3xl overflow-hidden shadow-2xl">
-            <iframe id="cFrame" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+        <button onclick="window.closeContent()" class="absolute top-6 right-6 text-white text-7xl font-thin hover:text-red-500 transition active:scale-90">&times;</button>
+        <div id="modalBody" class="w-[90%] lg:w-[1200px] h-[85vh] bg-white rounded-3xl overflow-hidden shadow-2xl relative">
+            <iframe id="cFrame" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         </div>
     </div>
 
     <!-- ADMIN MODALS -->
     <div id="resourceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4 overflow-y-auto">
         <div class="bg-white p-10 rounded-[3rem] w-full max-w-lg my-8 relative shadow-3xl">
-            <h2 class="text-3xl font-black mb-8 text-slate-900">Post Material</h2>
+            <h2 class="text-3xl font-black mb-8 text-slate-900 text-center">Post Material</h2>
             <div class="space-y-5">
-                <input type="text" id="resTitle" placeholder="Lesson Title" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
+                <input type="text" id="resTitle" placeholder="Title (e.g. Science Part 1)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
                 <div class="flex gap-4">
                     <select id="resType" class="border rounded-2xl p-5 bg-white outline-none font-bold" onchange="window.updateForm(this.value)">
                         <option value="video">Video</option>
                         <option value="note">Note/File</option>
                         <option value="sim">Simulation</option>
                     </select>
-                    <input type="text" id="resLevel" placeholder="Category (e.g. Science)" class="flex-1 p-5 border rounded-2xl bg-slate-50">
+                    <input type="text" id="resLevel" placeholder="Category" class="flex-1 p-5 border rounded-2xl bg-slate-50">
                 </div>
                 <div id="htmlPasteBox" class="hidden"><textarea id="resHtmlContent" placeholder="Paste HTML simulation code here..." class="w-full p-5 border rounded-2xl bg-slate-50 h-40 text-xs font-mono"></textarea></div>
                 <div id="autoThumbBox" class="hidden p-6 bg-indigo-50 rounded-3xl border-2 border-dashed border-indigo-200 text-center">
                     <input type="file" id="resFile" accept=".pdf,.html,image/*" class="text-xs w-full">
                 </div>
-                <input type="text" id="resUrl" placeholder="Link (YouTube or Drive Link)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
-                <textarea id="resDesc" placeholder="Description..." class="w-full p-5 border rounded-2xl bg-slate-50 h-24 outline-none"></textarea>
-                <button onclick="window.addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-5 rounded-[2rem] font-black shadow-xl btn-bounce">PUBLISH CONTENT</button>
+                <input type="text" id="resUrl" placeholder="Material URL (YouTube/Drive)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
+                <textarea id="resDesc" placeholder="Brief info..." class="w-full p-5 border rounded-2xl bg-slate-50 h-24 outline-none"></textarea>
+                <button onclick="window.addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-5 rounded-[2rem] font-black shadow-xl btn-bounce">PUBLISH MATERIAL</button>
             </div>
         </div>
     </div>
 
-    <div id="loginModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-12 rounded-[3rem] w-full max-w-sm"><h2 class="text-3xl font-black mb-10 text-center uppercase">Login</h2><input type="email" id="email" placeholder="Email" class="w-full p-5 border rounded-3xl mb-4 bg-slate-50"><input type="password" id="password" placeholder="Password" class="w-full p-5 border rounded-3xl mb-8 bg-slate-50"><button onclick="window.handleLogin()" class="w-full bg-indigo-600 text-white py-5 rounded-3xl font-black shadow-xl">ENTER</button></div></div>
-    <div id="imageModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-10 rounded-[3rem] w-full max-w-lg flex flex-col max-h-[85vh]"><h2 class="text-2xl font-black mb-6 uppercase">Gallery Manager</h2><input type="file" id="fileInp" accept="image/*" class="mb-6 text-xs w-full"><button onclick="window.savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-4 rounded-2xl font-black">Upload Slide</button><div id="photoList" class="overflow-y-auto mt-8 space-y-3"></div><button onclick="window.toggle('imageModal')" class="mt-6 text-slate-400 font-bold uppercase text-xs">Close</button></div></div>
+    <!-- AUTH & SLIDER MODALS -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-12 rounded-[3rem] w-full max-w-sm"><h2 class="text-3xl font-black mb-10 text-center uppercase">Login</h2><input type="email" id="email" placeholder="Email" class="w-full p-5 border rounded-3xl mb-4 bg-slate-50"><input type="password" id="password" placeholder="Password" class="w-full p-5 border rounded-3xl mb-8 bg-slate-50"><button onclick="window.handleLogin()" class="w-full bg-indigo-600 text-white py-5 rounded-3xl font-black shadow-xl">ENTER</button></div></div>
+    <div id="imageModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-10 rounded-[3rem] w-full max-w-lg flex flex-col max-h-[85vh]"><h2 class="text-2xl font-black mb-6 uppercase">Gallery</h2><input type="file" id="fileInp" accept="image/*" class="mb-6 text-xs w-full"><button onclick="window.savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-4 rounded-2xl font-black">Upload Slide</button><div id="photoList" class="overflow-y-auto mt-8 space-y-3"></div><button onclick="window.toggle('imageModal')" class="mt-6 text-slate-400 font-bold uppercase text-xs">Close</button></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -144,13 +147,14 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         document.getElementById('year').innerText = new Date().getFullYear();
 
+        // 1. GLOBAL WINDOW FUNCTIONS
         window.toggle = (id) => document.getElementById(id).classList.toggle('hidden');
         window.updateForm = (val) => { document.getElementById('autoThumbBox').classList.toggle('hidden', val === 'video'); document.getElementById('htmlPasteBox').classList.toggle('hidden', val !== 'sim'); };
         window.handleLogin = async () => { try { await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value); window.toggle('loginModal'); } catch (e) { alert("Denied"); } };
         window.logout = () => signOut(auth);
         window.delItem = async (col, id) => { if(confirm("Confirm Delete?")) { await deleteDoc(doc(db, col, id)); } };
 
-        // SLIDER
+        // 2. SLIDER ENGINE
         onSnapshot(query(collection(db, "slideshow"), orderBy("createdAt", "desc")), (snap) => {
             const slider = document.getElementById('slider'); const list = document.getElementById('photoList');
             const data = snap.docs.map(d => ({id: d.id, ...d.data()}));
@@ -174,15 +178,12 @@
             };
         };
 
-        // HUB RENDERING
+        // 3. RESOURCE HUB ENGINE (Professional Icons & Play Logic)
         let rawRes = []; let filter = 'all';
         onSnapshot(collection(db, "resources"), (snap) => { rawRes = snap.docs.map(d => ({id: d.id, ...d.data()})); window.draw(); });
 
         window.handleSearch = () => window.draw();
-        window.filterType = (t) => { 
-            filter = t; document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-'+t).classList.add('active'); window.draw(); 
-        };
+        window.filterType = (t) => { filter = t; document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); window.draw(); };
 
         window.draw = () => {
             const q = document.getElementById('searchInput').value.toLowerCase();
@@ -193,40 +194,39 @@
                 const isVideo = m.type === 'video';
                 const ytMatch = m.url.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([^"&?\/\s]{11})/);
                 const ytId = isVideo && ytMatch ? ytMatch[1] : null;
-                
                 const thumb = m.thumb || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=600');
                 
-                let iconClass = 'fa-file-alt'; let bgClass = 'bg-slate-900';
-                if(m.type === 'sim') { iconClass = 'fa-flask'; bgClass = 'bg-sim'; }
-                else if(m.title.toLowerCase().includes('pdf')) { iconClass = 'fa-file-pdf'; bgClass = 'bg-pdf'; }
-                else if(m.title.toLowerCase().includes('doc')) { iconClass = 'fa-file-word'; bgClass = 'bg-doc'; }
-                else if(m.title.toLowerCase().includes('ppt')) { iconClass = 'fa-file-powerpoint'; bgClass = 'bg-ppt'; }
+                let icon = 'fa-file-alt'; let bgColor = 'bg-slate-900';
+                if(m.type === 'sim') { icon = 'fa-flask'; bgColor = 'bg-sim'; }
+                else if(m.title.toLowerCase().includes('pdf')) { icon = 'fa-file-pdf'; bgColor = 'bg-pdf'; }
+                else if(m.title.toLowerCase().includes('doc')) { icon = 'fa-file-word'; bgColor = 'bg-doc'; }
+                else if(m.title.toLowerCase().includes('ppt')) { icon = 'fa-file-powerpoint'; bgColor = 'bg-ppt'; }
 
                 return `
                 <div class="dpk-card flex flex-col">
-                    <div class="card-img-wrap cursor-pointer" onclick="${m.type === 'sim' ? `window.viewSim(\`${m.url}\`)` : `window.open('${m.url}', '_blank')`}">
+                    <div class="card-img-wrap cursor-pointer" onclick="${isVideo ? `window.viewPlayer('${m.url}', 'video')` : (m.type==='sim' ? `window.viewPlayer(\`${m.url}\`, 'sim')` : `window.open('${m.url}', '_blank')`)}">
                         <img src="${thumb}" class="card-img">
-                        <div class="absolute inset-0 bg-black/5 opacity-40"></div>
+                        <div class="absolute inset-0 bg-black/5"></div>
                         
-                        <!-- ADMIN TRASH ICON (TOP RIGHT) -->
-                        <button onclick="event.stopPropagation(); window.delItem('resources', '${m.id}')" class="${isAdm} absolute top-3 right-3 w-9 h-9 bg-white/90 text-red-500 rounded-xl shadow-xl flex items-center justify-center transition active:scale-90 z-20"><i class="fas fa-trash"></i></button>
+                        <!-- ADMIN TRASH ICON -->
+                        <button onclick="event.stopPropagation(); window.delItem('resources', '${m.id}')" class="${isAdm} absolute top-3 right-3 w-9 h-9 bg-white text-red-500 rounded-xl shadow-xl flex items-center justify-center z-10 hover:bg-red-50"><i class="fas fa-trash"></i></button>
                         
-                        <!-- YOUTUBE PLAY BUTTON (ONLY FOR VIDEOS) -->
-                        ${isVideo ? `<div class="yt-play-btn"><i class="fab fa-youtube"></i></div>` : `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${bgClass} w-16 h-16 rounded-3xl shadow-2xl flex items-center justify-center text-white text-3xl opacity-90"><i class="fas ${iconClass}"></i></div>`}
+                        <!-- DYNAMIC ICON DISPLAY -->
+                        ${isVideo ? `<div class="yt-play-btn"><i class="fab fa-youtube"></i></div>` : `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${bgColor} w-16 h-16 rounded-3xl shadow-2xl flex items-center justify-center text-white text-3xl opacity-90"><i class="fas ${icon}"></i></div>`}
                     </div>
 
                     <div class="p-6 flex flex-col flex-grow">
-                        <h3 class="text-xl font-extrabold text-slate-800 leading-tight mb-1">${m.title}</h3>
+                        <h3 class="text-xl font-extrabold text-slate-800 leading-tight mb-1 uppercase tracking-tight">${m.title}</h3>
                         <div class="text-indigo-600 text-xs font-black uppercase tracking-wider mb-5">${m.level}</div>
-                        <div class="h-[1px] w-full bg-slate-100 mb-5"></div>
-                        <div class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Designed by Deepak Prakash Bhatta on ${new Date(m.createdAt || Date.now()).toISOString().split('T')[0]}</div>
+                        <div class="h-[1.5px] w-full bg-slate-100 mb-5"></div>
+                        <div class="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-none">Designed by Deepak Prakash Bhatta on ${new Date(m.createdAt || Date.now()).toISOString().split('T')[0]}</div>
                     </div>
                 </div>`;
             }).join('');
         };
 
         window.addMaterial = async () => {
-            const btn = document.getElementById('publishBtn'); btn.innerText = "WAIT..."; btn.disabled = true;
+            const btn = document.getElementById('publishBtn'); btn.innerText = "UPLOADING..."; btn.disabled = true;
             const type = document.getElementById('resType').value; const title = document.getElementById('resTitle').value;
             const level = document.getElementById('resLevel').value; const desc = document.getElementById('resDesc').value;
             const file = document.getElementById('resFile').files[0]; const pastedHtml = document.getElementById('resHtmlContent').value;
@@ -248,10 +248,27 @@
             window.toggle('resourceModal'); btn.innerText = "PUBLISH"; btn.disabled = false;
         };
 
-        window.viewSim = (url) => { document.getElementById('cFrame').srcdoc = url; window.toggle('contentModal'); };
-        window.closeContent = () => { document.getElementById('cFrame').srcdoc = ""; window.toggle('contentModal'); };
+        // 4. MASTER PLAYER LOGIC
+        window.viewPlayer = (url, type) => {
+            const frame = document.getElementById('cFrame');
+            frame.src = ""; frame.srcdoc = ""; // Clear
+            
+            if (type === 'video') {
+                const ytMatch = url.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([^"&?\/\s]{11})/);
+                if (ytMatch) {
+                    frame.src = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1`;
+                    window.toggle('contentModal');
+                } else { alert("Invalid YouTube Link"); }
+            } else if (type === 'sim') {
+                frame.srcdoc = url;
+                window.toggle('contentModal');
+            }
+        };
+
+        window.closeContent = () => { document.getElementById('cFrame').src = ""; document.getElementById('cFrame').srcdoc = ""; window.toggle('contentModal'); };
         window.handleOutsideClick = (e) => { if(e.target.id === 'contentModal') window.closeContent(); };
 
+        // 5. NAV BEHAVIOR
         let lastY = window.scrollY;
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('mainNav');
