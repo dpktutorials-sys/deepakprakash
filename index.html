@@ -14,8 +14,8 @@
         .dpk-red { color: #FF0000; } .tut-blue { color: #0000FF; }
         .subtitle-green { color: #22c55e; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; }
 
-        /* PREMIUM NAV */
-        .glass-nav { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px); transition: 0.4s ease; position: fixed; top: 0; width: 100%; z-index: 100; }
+        /* PREMIUM NAV TABS */
+        .glass-nav { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px); transition: transform 0.4s ease; position: fixed; top: 0; width: 100%; z-index: 100; }
         .nav-hidden { transform: translateY(-100%); }
         .nav-tab { position: relative; font-size: 20px; font-weight: 800; color: #64748b; transition: 0.3s; padding: 5px 0; }
         .nav-tab:hover { color: #4f46e5; }
@@ -29,16 +29,15 @@
         .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 1.5s; }
         .slide.active { opacity: 1; }
 
-        /* CARDS */
+        /* CARD DESIGN */
         .dpk-card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; transition: 0.4s; height: 100%; display: flex; flex-direction: column; }
         .dpk-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.15); }
         .card-media { position: relative; aspect-ratio: 16/9; background: #000; overflow: hidden; }
         .card-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .yt-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 60px; color: #ff0000; cursor: pointer; text-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10; }
-        
-        /* FILE COLORS */
-        .bg-pdf { background: #ef4444; } .bg-doc { background: #facc15; } .bg-ppt { background: #22c55e; } .bg-sim { background: #8b5cf6; } .bg-ques { background: #6366f1; }
+        .yt-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 65px; color: #ff0000; cursor: pointer; text-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10; transition: 0.2s; }
+        .dpk-card:hover .yt-play-btn { transform: translate(-50%, -50%) scale(1.15); }
 
+        .bg-pdf { background: #ef4444; } .bg-doc { background: #facc15; } .bg-ppt { background: #22c55e; } .bg-sim { background: #8b5cf6; } .bg-ques { background: #6366f1; }
         .btn-bounce { transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .btn-bounce:hover { transform: scale(1.05); }
     </style>
@@ -67,24 +66,24 @@
                 <button id="loginBtn" onclick="window.toggle('loginModal')" class="text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-indigo-600 transition">Admin</button>
                 <div id="adminPanel" class="hidden flex gap-3">
                     <button onclick="window.toggle('imageModal')" class="bg-indigo-600 text-white text-[10px] px-5 py-2.5 rounded-full font-black uppercase shadow-lg">Gallery</button>
-                    <button onclick="window.logout()" class="text-red-500 hover:scale-110 transition"><i class="fas fa-power-off"></i></button>
+                    <button onclick="window.logout()" class="text-red-500 hover:scale-110 transition p-2"><i class="fas fa-power-off"></i></button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- SLIDER -->
+    <!-- HERO SLIDER -->
     <div class="slider-wrap shadow-2xl"><div id="slider" class="w-full h-full"></div></div>
 
-    <!-- HUB -->
+    <!-- MAIN HUB -->
     <main class="max-w-7xl mx-auto px-6 py-20">
-        <div class="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
+        <div class="flex flex-col md:flex-row items-center justify-between mb-16 gap-8 text-center md:text-left">
             <h2 id="hubTitle" class="text-5xl font-black text-slate-900 tracking-tighter uppercase">Resource Hub</h2>
             <div class="flex gap-4 w-full md:w-auto">
-                <input type="text" id="searchInput" oninput="window.handleSearch()" placeholder="Search Topics..." class="bg-white border rounded-2xl px-6 py-4 w-full md:w-80 outline-none focus:border-indigo-600 shadow-sm">
+                <input type="text" id="searchInput" oninput="window.handleSearch()" placeholder="Search library..." class="bg-white border rounded-2xl px-6 py-4 w-full md:w-80 outline-none focus:border-indigo-600 shadow-sm">
                 <div id="addResGroup" class="hidden flex gap-2">
-                    <button onclick="window.toggle('resourceModal')" class="bg-indigo-600 text-white px-6 py-4 rounded-2xl font-black whitespace-nowrap shadow-lg">+ Material</button>
-                    <button onclick="window.toggle('questionModal')" class="bg-indigo-900 text-white px-6 py-4 rounded-2xl font-black whitespace-nowrap shadow-lg">+ Question</button>
+                    <button onclick="window.toggle('resourceModal')" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black whitespace-nowrap shadow-xl shadow-indigo-100">+ Material</button>
+                    <button onclick="window.toggle('questionModal')" class="bg-indigo-900 text-white px-8 py-4 rounded-2xl font-black whitespace-nowrap shadow-xl shadow-indigo-200">+ Question</button>
                 </div>
             </div>
         </div>
@@ -92,14 +91,14 @@
     </main>
 
     <footer class="bg-[#001b3a] text-white py-20 text-center relative">
-        <p class="font-black text-2xl uppercase brand-font mb-4"><span class="dpk-red">DPK</span> <span class="tut-blue">TUTORIALS</span></p>
+        <p class="font-black text-2xl uppercase brand-font tracking-tighter mb-4"><span class="dpk-red">DPK</span> <span class="tut-blue">TUTORIALS</span></p>
         <p class="text-slate-400 text-sm uppercase font-bold tracking-widest">Designed by Deepak Prakash Bhatta</p>
-        <p class="text-slate-500 text-[11px] mt-2 font-bold uppercase">© <span id="year"></span> All Rights Reserved</p>
+        <p class="text-slate-500 text-[11px] mt-2 uppercase tracking-widest">© <span id="year"></span> All Rights Reserved</p>
     </footer>
 
-    <!-- MODAL: LAB / SIM -->
+    <!-- CONTENT VIEWER MODAL -->
     <div id="contentModal" onclick="window.handleOutsideClick(event)" class="fixed inset-0 bg-slate-900/98 z-[300] hidden flex flex-col items-center justify-center p-4">
-        <button onclick="window.closeContent()" class="absolute top-6 right-6 text-white text-7xl font-thin hover:text-red-500 transition">&times;</button>
+        <button onclick="window.closeContent()" class="absolute top-6 right-6 text-white text-7xl font-thin hover:text-red-500 transition active:scale-90">&times;</button>
         <div id="modalBody" class="w-[95%] h-[90vh] bg-white rounded-3xl overflow-hidden shadow-2xl">
             <iframe id="cFrame" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
         </div>
@@ -108,9 +107,10 @@
     <!-- MODAL: ADD MATERIAL -->
     <div id="resourceModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4 overflow-y-auto">
         <div class="bg-white p-10 rounded-[3rem] w-full max-w-lg my-8 relative shadow-3xl">
-            <h2 class="text-3xl font-black mb-8 text-slate-900 text-center">Post Material</h2>
+            <button onclick="window.toggle('resourceModal')" class="absolute top-8 right-8 text-slate-300 hover:text-red-500 transition text-3xl"><i class="fas fa-times-circle"></i></button>
+            <h2 class="text-3xl font-black mb-8 text-slate-900">Post Material</h2>
             <div class="space-y-5">
-                <input type="text" id="resTitle" placeholder="Title (e.g. Wave Optics)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
+                <input type="text" id="resTitle" placeholder="Title (e.g. Thermodynamics)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
                 <div class="flex gap-4">
                     <select id="resType" class="border rounded-2xl p-5 bg-white outline-none font-bold" onchange="window.updateForm(this.value)">
                         <option value="video">Video</option>
@@ -123,16 +123,19 @@
                 <div id="autoThumbBox" class="hidden p-6 bg-indigo-50 rounded-3xl border-2 border-dashed border-indigo-200 text-center">
                     <input type="file" id="resFile" accept=".pdf,.html,image/*" class="text-xs w-full">
                 </div>
-                <input type="text" id="resUrl" placeholder="Link (YouTube or Drive)" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
-                <textarea id="resDesc" placeholder="Brief info..." class="w-full p-5 border rounded-2xl bg-slate-50 h-24 outline-none"></textarea>
+                <input type="text" id="resUrl" placeholder="YouTube or Drive Link" class="w-full p-5 border rounded-2xl bg-slate-50 outline-none">
+                <textarea id="resDesc" placeholder="Description..." class="w-full p-5 border rounded-2xl bg-slate-50 h-24 outline-none"></textarea>
                 <button onclick="window.addMaterial()" id="publishBtn" class="w-full bg-indigo-600 text-white py-5 rounded-[2rem] font-black shadow-xl">PUBLISH CONTENT</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: ADD QUESTION -->
+    <!-- MODAL: ADD QUESTION (FIXED WITH CUT BUTTON) -->
     <div id="questionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md hidden flex items-center justify-center z-[200] p-4 overflow-y-auto">
         <div class="bg-white p-10 rounded-[3rem] w-full max-w-lg my-8 relative shadow-3xl">
+            <!-- Cut Button Added Below -->
+            <button onclick="window.toggle('questionModal')" class="absolute top-8 right-8 text-slate-300 hover:text-red-500 transition text-3xl"><i class="fas fa-times-circle"></i></button>
+            
             <h2 class="text-3xl font-black mb-8 text-slate-900 text-center">Add Question</h2>
             <div class="space-y-4">
                 <input type="text" id="qTitle" placeholder="Topic Name" class="w-full p-4 border rounded-2xl bg-slate-50 outline-none">
@@ -142,22 +145,21 @@
                     <option value="long">Long Question</option>
                 </select>
                 <textarea id="qText" placeholder="Write the question here..." class="w-full p-4 border rounded-2xl bg-slate-50 outline-none h-24"></textarea>
-                
                 <div id="mcqOptions" class="space-y-2">
                     <input type="text" id="optA" placeholder="Option A" class="w-full p-3 border rounded-xl bg-slate-50">
                     <input type="text" id="optB" placeholder="Option B" class="w-full p-3 border rounded-xl bg-slate-50">
                     <input type="text" id="optC" placeholder="Option C" class="w-full p-3 border rounded-xl bg-slate-50">
                     <input type="text" id="optD" placeholder="Option D" class="w-full p-3 border rounded-xl bg-slate-50">
                 </div>
-                <input type="text" id="qAns" placeholder="Correct Answer" class="w-full p-4 border rounded-2xl bg-indigo-50 border-indigo-100 outline-none">
+                <input type="text" id="qAns" placeholder="Correct Answer" class="w-full p-4 border rounded-2xl bg-indigo-50 border-indigo-100 font-bold outline-none">
                 <button onclick="window.addQuestion()" id="qPublishBtn" class="w-full bg-indigo-900 text-white py-5 rounded-[2rem] font-black shadow-xl">PUBLISH TO BANK</button>
             </div>
         </div>
     </div>
 
-    <!-- ADMIN AUTH -->
-    <div id="loginModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-12 rounded-[3rem] w-full max-w-sm"><h2 class="text-3xl font-black mb-10 text-center uppercase">Login</h2><input type="email" id="email" placeholder="Email" class="w-full p-5 border rounded-3xl mb-4 bg-slate-50"><input type="password" id="password" placeholder="Password" class="w-full p-5 border rounded-3xl mb-8 bg-slate-50"><button onclick="window.handleLogin()" class="w-full bg-indigo-600 text-white py-5 rounded-3xl font-black shadow-xl">ENTER</button></div></div>
-    <div id="imageModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-10 rounded-[3rem] w-full max-w-lg flex flex-col max-h-[85vh] text-center"><h2 class="text-2xl font-black mb-6 uppercase">Gallery</h2><input type="file" id="fileInp" accept="image/*" class="mb-6 text-xs w-full"><button onclick="window.savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-4 rounded-2xl font-black">Upload Slide</button><div id="photoList" class="overflow-y-auto mt-8 space-y-3"></div><button onclick="window.toggle('imageModal')" class="mt-6 text-slate-400 font-bold uppercase text-xs">Close</button></div></div>
+    <!-- ADMIN SYSTEM -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-12 rounded-[3rem] w-full max-w-sm"><button onclick="window.toggle('loginModal')" class="absolute top-8 right-8 text-slate-300 text-2xl hover:text-red-500"><i class="fas fa-times-circle"></i></button><h2 class="text-3xl font-black mb-10 text-center uppercase">Login</h2><input type="email" id="email" placeholder="Email" class="w-full p-5 border rounded-3xl mb-4 bg-slate-50"><input type="password" id="password" placeholder="Password" class="w-full p-5 border rounded-3xl mb-8 bg-slate-50"><button onclick="window.handleLogin()" class="w-full bg-indigo-600 text-white py-5 rounded-3xl font-black shadow-xl">ENTER</button></div></div>
+    <div id="imageModal" class="fixed inset-0 bg-slate-900/70 hidden flex items-center justify-center z-[200] p-4"><div class="bg-white p-10 rounded-[3rem] w-full max-w-lg flex flex-col max-h-[85vh] text-center"><button onclick="window.toggle('imageModal')" class="absolute top-8 right-8 text-slate-300 text-2xl hover:text-red-500"><i class="fas fa-times-circle"></i></button><h2 class="text-2xl font-black mb-6 uppercase">Gallery</h2><input type="file" id="fileInp" accept="image/*" class="mb-6 text-xs w-full"><button onclick="window.savePhoto()" id="upBtn" class="bg-indigo-600 text-white py-4 rounded-2xl font-black">Upload Slide</button><div id="photoList" class="overflow-y-auto mt-8 space-y-3 text-left"></div></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -170,7 +172,7 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
         document.getElementById('year').innerText = new Date().getFullYear();
 
-        // 1. GLOBAL HELPERS
+        // --- GLOBAL ADMIN ---
         window.toggle = (id) => document.getElementById(id).classList.toggle('hidden');
         window.updateForm = (val) => { document.getElementById('autoThumbBox').classList.toggle('hidden', val === 'video'); document.getElementById('htmlPasteBox').classList.toggle('hidden', val !== 'sim'); };
         window.toggleQForm = (val) => { document.getElementById('mcqOptions').classList.toggle('hidden', val !== 'mcq'); };
@@ -178,7 +180,7 @@
         window.logout = () => signOut(auth);
         window.delItem = async (col, id) => { if(confirm("Confirm Delete?")) { await deleteDoc(doc(db, col, id)); } };
 
-        // 2. VIDEO INLINE PLAYER
+        // VIDEO INLINE PLAYER
         window.playInline = (id, url) => {
             const container = document.getElementById('media-' + id);
             const ytMatch = url.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([^"&?\/\s]{11})/);
@@ -187,7 +189,7 @@
             }
         };
 
-        // 3. DATABASE LISTENERS
+        // DATABASE DRAWING
         let rawRes = []; let rawQues = []; let filter = 'all';
         onSnapshot(collection(db, "resources"), (snap) => { rawRes = snap.docs.map(d => ({id: d.id, ...d.data()})); window.draw(); });
         onSnapshot(collection(db, "questions"), (snap) => { rawQues = snap.docs.map(d => ({id: d.id, ...d.data()})); window.draw(); });
@@ -195,7 +197,6 @@
         window.filterType = (t) => { filter = t; document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); window.draw(); };
         window.handleSearch = () => window.draw();
 
-        // 4. DRAWING INTERFACE
         window.draw = () => {
             const q = document.getElementById('searchInput').value.toLowerCase();
             const grid = document.getElementById('resourceGrid');
@@ -204,24 +205,15 @@
             if (filter === 'ques') {
                 grid.innerHTML = rawQues.filter(m => m.title.toLowerCase().includes(q)).map(m => `
                 <div class="dpk-card p-8 relative">
-                    <button onclick="window.delItem('questions', '${m.id}')" class="${isAdm} absolute top-4 right-4 text-red-300 hover:text-red-600"><i class="fas fa-trash"></i></button>
-                    <div class="flex items-center gap-3 mb-6">
-                        <span class="bg-indigo-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">${m.qType}</span>
-                        <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">${m.title}</span>
-                    </div>
-                    <p class="text-xl font-extrabold text-slate-800 leading-tight mb-8">${m.text}</p>
-                    ${m.qType === 'mcq' ? `
-                    <div class="grid grid-cols-1 gap-3 mb-8">
-                        <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-600">A) ${m.optA}</div>
-                        <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-600">B) ${m.optB}</div>
-                        <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-600">C) ${m.optC}</div>
-                        <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-600">D) ${m.optD}</div>
-                    </div>` : ''}
-                    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full bg-slate-100 text-indigo-600 py-3 rounded-xl font-black text-xs uppercase tracking-widest">Show Answer</button>
-                    <div class="hidden mt-4 p-5 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-sm">Answer: ${m.answer}</div>
+                    <button onclick="window.delItem('questions', '${m.id}')" class="${isAdm} absolute top-4 right-4 text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                    <div class="flex items-center gap-3 mb-6"><span class="bg-indigo-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase">${m.qType}</span><span class="text-slate-400 text-xs font-bold uppercase">${m.title}</span></div>
+                    <p class="text-xl font-extrabold text-slate-800 mb-8">${m.text}</p>
+                    ${m.qType === 'mcq' ? `<div class="grid grid-cols-1 gap-3 mb-8"><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">A) ${m.optA}</div><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">B) ${m.optB}</div><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">C) ${m.optC}</div><div class="p-4 bg-slate-50 border rounded-2xl text-sm font-bold text-slate-600">D) ${m.optD}</div></div>` : ''}
+                    <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full bg-slate-100 text-indigo-600 py-3 rounded-xl font-black text-xs uppercase">Show Answer</button>
+                    <div class="hidden mt-4 p-5 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-sm">Correct: ${m.answer}</div>
                 </div>`).join('');
             } else {
-                grid.innerHTML = rawRes.filter(m => (filter === 'all' || m.type === filter) && m.title.toLowerCase().includes(q)).map(m => {
+                grid.innerHTML = rawRes.filter(m => (filter === 'all' || m.type === filter) && m.title.toLowerCase().includes(q)).map((m) => {
                     const isVideo = m.type === 'video';
                     const ytMatch = m.url.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([^"&?\/\s]{11})/);
                     const ytId = isVideo && ytMatch ? ytMatch[1] : null;
@@ -236,22 +228,19 @@
                     return `<div class="dpk-card">
                         <div class="card-media" id="media-${m.id}">
                             <img src="${thumb}" class="card-img">
-                            <div class="absolute inset-0 bg-black/5"></div>
-                            <button onclick="event.stopPropagation(); window.delItem('resources', '${m.id}')" class="${isAdm} absolute top-3 right-3 w-9 h-9 bg-white text-red-500 rounded-xl shadow-xl flex items-center justify-center z-20"><i class="fas fa-trash"></i></button>
+                            <div class="absolute inset-0 bg-black/5 opacity-40"></div>
+                            <button onclick="event.stopPropagation(); window.delItem('resources', '${m.id}')" class="${isAdm} absolute top-3 right-3 w-9 h-9 bg-white text-red-500 rounded-xl shadow-xl flex items-center justify-center z-20 hover:bg-red-50"><i class="fas fa-trash"></i></button>
                             ${isVideo ? `<div class="yt-play-btn" onclick="window.playInline('${m.id}', '${m.url}')"><i class="fab fa-youtube"></i></div>` : `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${bg} w-16 h-16 rounded-3xl shadow-2xl flex items-center justify-center text-white text-3xl opacity-95 cursor-pointer" onclick="${m.type==='sim' ? `window.viewSim(\`${m.url}\`)` : `window.open('${m.url}', '_blank')`}"><i class="fas ${icon}"></i></div>`}
                         </div>
                         <div class="p-8 flex flex-col flex-grow">
                             <h3 class="text-xl font-extrabold text-slate-800 leading-tight mb-1 uppercase tracking-tight">${m.title}</h3>
                             <div class="text-indigo-600 text-xs font-black uppercase tracking-wider mb-5">${m.level}</div>
-                            <div class="mt-auto flex justify-between items-center border-t border-slate-50 pt-4">
-                                ${m.type==='sim' ? `<button onclick="window.viewSim(\`${m.url}\`)" class="bg-indigo-600 text-white px-7 py-3 rounded-2xl text-[11px] font-black uppercase shadow-lg btn-bounce">Open Lab</button>` : `<button onclick="window.open('${m.url}', '_blank')" class="bg-indigo-600 text-white px-7 py-3 rounded-2xl text-[11px] font-black uppercase shadow-lg btn-bounce">Open ${m.type.toUpperCase()}</button>`}
-                            </div>
+                            <div class="mt-auto flex justify-between items-center border-t border-slate-50 pt-4 text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-none">Designed by Deepak Prakash Bhatta</div>
                         </div></div>`;
                 }).join('');
             }
         };
 
-        // 5. UPLOAD LOGIC
         window.addMaterial = async () => {
             const btn = document.getElementById('publishBtn'); btn.innerText = "WAIT..."; btn.disabled = true;
             const type = document.getElementById('resType').value; const title = document.getElementById('resTitle').value;
@@ -276,25 +265,17 @@
         };
 
         window.addQuestion = async () => {
-            const btn = document.getElementById('qPublishBtn'); btn.innerText = "PUBLISHING...";
-            const data = {
-                title: document.getElementById('qTitle').value, qType: document.getElementById('qType').value,
-                text: document.getElementById('qText').value, answer: document.getElementById('qAns').value,
-                optA: document.getElementById('optA').value, optB: document.getElementById('optB').value,
-                optC: document.getElementById('optC').value, optD: document.getElementById('optD').value,
-                createdAt: Date.now()
-            };
+            const data = { title: document.getElementById('qTitle').value, qType: document.getElementById('qType').value, text: document.getElementById('qText').value, answer: document.getElementById('qAns').value, optA: document.getElementById('optA').value, optB: document.getElementById('optB').value, optC: document.getElementById('optC').value, optD: document.getElementById('optD').value, createdAt: Date.now() };
             await addDoc(collection(db, "questions"), data);
-            window.toggle('questionModal'); btn.innerText = "PUBLISH TO BANK";
+            window.toggle('questionModal');
         };
 
-        // 6. GALLERY & AUTH
         onSnapshot(query(collection(db, "slideshow"), orderBy("createdAt", "desc")), (snap) => {
             const slider = document.getElementById('slider'); const list = document.getElementById('photoList');
             const data = snap.docs.map(d => ({id: d.id, ...d.data()}));
             if(data.length > 0) {
                 slider.innerHTML = data.map((s, i) => `<img src="${s.url}" class="slide ${i===0?'active':''}">`).join('');
-                list.innerHTML = data.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-2 border rounded-xl"><img src="${s.url}" class="w-16 h-10 object-cover rounded shadow-sm"><button onclick="window.delItem('slideshow', '${s.id}')" class="ml-auto text-red-500 font-bold text-xs">Remove</button></div>`).join('');
+                list.innerHTML = data.map(s => `<div class="flex items-center gap-4 bg-slate-50 p-2 rounded-xl border"><img src="${s.url}" class="w-16 h-10 object-cover rounded"><button onclick="window.delItem('slideshow', '${s.id}')" class="ml-auto text-red-500 font-bold text-xs">Remove</button></div>`).join('');
                 let cur = 0; setInterval(() => { const els = document.querySelectorAll('.slide'); if(els.length < 2) return; els[cur].classList.remove('active'); cur = (cur+1)%els.length; els[cur].classList.add('active'); }, 6000);
             }
         });
